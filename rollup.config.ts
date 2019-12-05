@@ -1,9 +1,9 @@
-import resolve from 'rollup-plugin-node-resolve'
+import resolve from '@rollup/plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import sourceMaps from 'rollup-plugin-sourcemaps'
 import camelCase from 'lodash.camelcase'
-import typescript from 'rollup-plugin-typescript2'
-import json from 'rollup-plugin-json'
+import typescript from '@rollup/plugin-typescript'
+import json from '@rollup/plugin-json'
 import replace from '@rollup/plugin-replace'
 import { uglify } from 'rollup-plugin-uglify'
 
@@ -26,7 +26,7 @@ export default {
     // Allow json resolution
     json(),
     // Compile TypeScript files
-    typescript({ useTsconfigDeclarationDir: true }),
+    typescript(),
     // replace environment variables
     replace({ __RETRY_IMAGE__: process.env.__RETRY_IMAGE__ }),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
