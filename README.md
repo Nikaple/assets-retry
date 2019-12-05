@@ -32,7 +32,7 @@ Then, inject the library **at the beginning** of the page with proper webpack co
 
 #### Use inline script directly
 
-If you don't want to spend your time fiddling around with webpack configurations, you can inline the [minified file](https://github.com/Nikaple/assets-retry/dist/assets-retry.umd.js) with a script tag, and place it at the beginning of the page.
+If you don't want to spend your time fiddling around with webpack configurations, you can inline the [minified file](https://github.com/Nikaple/assets-retry/dist/assets-retry.umd.js) with a script tag, and place it **at the beginning** of the page.
 
 ### Usage
 
@@ -45,7 +45,7 @@ var assetsRetryStatistics = window.assetsRetry({
     domain: ['your.first.domain', 'your.second.domain/namespace'],
     // maximum retry count for each asset, default is 3
     maxRetryCount: 3
-    // onRetry hook is how you customize retry logic, default is x => x
+    // onRetry hook is how you can customize retry logic with, default is x => x
     onRetry: function(currentUrl, originalUrl, statistics) {
         return currentUrl
     }
