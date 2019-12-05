@@ -171,16 +171,14 @@ function requireEnsure(chunkId) {
 
 ### Todo
 
-- [x] 单元测试
-- [x] BrowserStack 兼容性测试
-- [x] 更多 demo
-
+- [ ] 单元测试
+- [ ] BrowserStack 兼容性测试
+- [ ] 更多 demo
 
 ### 常见问题
 
 1. Q: 为什么我的页面在 Safari 上白屏了？
    A: 不要在页面加载完成（ `window.onload` ）之前加载任何异步的脚本，这些脚本应该被同步加载。当你这么做的时候， Safari 浏览器会认为 DOM 还未加载完毕，但此时调用 `document.write`，却会清空页面。
-
 
 ### NPM scripts
 -   `npm t`: Run test suite
@@ -191,21 +189,6 @@ function requireEnsure(chunkId) {
 -   `npm run lint`: Lints code
 -   `npm run commit`: Commit using conventional commit style ([husky](https://github.com/typicode/husky) will tell you to use it if you haven't :wink:)
 
-### Automatic releases
+### 致谢
 
-_**Prerequisites**: you need to create/login accounts and add your project to:_
-
--   [npm](https://www.npmjs.com/)
--   [Travis CI](https://travis-ci.org)
--   [Coveralls](https://coveralls.io)
-
-_**Prerequisite for Windows**: Semantic-release uses
-**[node-gyp](https://github.com/nodejs/node-gyp)** so you will need to
-install
-[Microsoft's windows-build-tools](https://github.com/felixrieseberg/windows-build-tools)
-using this command:_
-
-```bash
-npm install --global --production windows-build-tools
-```
-
+感谢 [realworld.io](https://realworld.io) 提供的 Demo App。
