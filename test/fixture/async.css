@@ -1,0 +1,16 @@
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+body {
+    border: #ffdddd 2px solid;
+    border-style: solid;
+}
+
+#cssAsync {
+    background-image: url('/test/not-exist/background-image-async.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+}
