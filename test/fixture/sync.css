@@ -1,0 +1,26 @@
+html,
+body,
+div,
+img {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+
+body {
+  background: #ffdddd;
+  background-repeat: no-repeat;
+}
+
+pre {
+  font-size: 20px;
+}
+
+#cssSync {
+  background-image: url('/test/not-exist/background-image-sync.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+}

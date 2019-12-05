@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script>
+        var prev = new Date().getTime();
+        var search = location.search;
+        window.loadedScripts = {};
+        var domain = [
+            '/test/not-exist',
+            '/test/fixture'
+        ];
+        if (/domain=3/.test(search)) {
+            domain.splice(1, 0, '/test/not-exist2');
+        }
+        var assetsRetryStatistics = window.assetsRetry({
+            domain: domain,
+            onRetry: function(c, o, s) { return c },
+            maxRetryCount: 2
+        })
+        console.log('[time]: ', new Date().getTime() - prev)
+    </script>
+    <script src="/test/fixture/test.js"></script>
+    <link type="text/css" rel="stylesheet" href="/test/not-exist/sync.css">
+    <title>Assets Retry</title>
+</head>
+<body>
+    <h1>Assets Retry Test</h1>
+    <p id="result">Testing...</p>
+    <img id="img" src="/test/not-exist/img-tag.png" height="60" />
+    <div id="cssSync" style="height: 60px"></div>
+    <div id="cssAsync" style="height: 60px"></div>
+    <script src="/test/not-exist/vendor.js"></script>
+    <script src="/test/not-exist/sync.js"></script>
+    <script>
+    </script>
+</body>
+</html>
