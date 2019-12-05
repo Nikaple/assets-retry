@@ -28,7 +28,7 @@ A tiny 5 KB non-intrusive library to retry your assets (scripts, stylesheets, im
 $ npm install assets-retry --save
 ```
 
-Then, inject the library **at the beginning** of the page with proper webpack configurations.
+Then, inject the library **at the beginning** of the page with proper webpack configurations. [See example](./examples/webpack)
 
 #### Use inline script directly
 
