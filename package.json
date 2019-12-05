@@ -31,12 +31,12 @@
     "commit": "git-cz",
     "semantic-release": "semantic-release",
     "semantic-release-prepare": "ts-node tools/semantic-release-prepare",
-    "travis-deploy-once": "travis-deploy-once",
-    "commitmsg": "commitlint -E HUSKY_GIT_PARAMS"
+    "travis-deploy-once": "travis-deploy-once"
   },
   "husky": {
     "pre-commit": "lint-staged",
-    "pre-push": "npm run test:prod && npm run build"
+    "pre-push": "npm run test:prod && npm run build",
+    "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
   },
   "lint-staged": {
     "{src,test}/**/*.ts": [
@@ -99,7 +99,7 @@
     "coveralls": "^3.0.2",
     "cross-env": "^6.0.3",
     "cz-conventional-changelog": "^3.0.2",
-    "husky": "^3.1.0",
+    "husky": "^4.0.0-beta.5",
     "jest": "^24.9.0",
     "jest-config": "^24.9.0",
     "lint-staged": "^9.5.0",
