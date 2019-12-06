@@ -67,6 +67,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (userModifiedUrl === null) {
             return
         }
+        // eslint-disable-next-line
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function')
         }

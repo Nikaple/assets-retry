@@ -23,6 +23,7 @@ export const safeCall = function<T, R>(
     thisArg: T,
     args: any
 ): R {
+    // eslint-disable-next-line
     if (typeof func !== 'function') {
         return null as any
     }

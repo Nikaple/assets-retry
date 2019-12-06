@@ -95,6 +95,7 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                             if (userModifiedSrc === null) {
                                 return
                             }
+                            // eslint-disable-next-line
                             if (typeof userModifiedSrc !== 'string') {
                                 throw new Error('a string should be returned in `onRetry` function')
                             }
@@ -212,9 +213,11 @@ const hookPrototype = function(target: any, opts: InnerAssetsRetryOptions) {
  */
 export default function initAsync(opts: InnerAssetsRetryOptions) {
     hookCreateElement(opts)
+    // eslint-disable-next-line
     if (typeof Node !== 'undefined') {
         hookPrototype(Node.prototype, opts)
     }
+    // eslint-disable-next-line
     if (typeof Element !== 'undefined') {
         hookPrototype(Element.prototype, opts)
     }

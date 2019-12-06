@@ -28,6 +28,7 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
     try {
         setDefault(opts, maxRetryCountProp, 3)
         setDefault(opts, onRetryProp, identity)
+        // eslint-disable-next-line
         if (typeof opts[domainProp] !== 'object') {
             throw new Error('opts.domain cannot be non-object.')
         }
