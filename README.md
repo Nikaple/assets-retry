@@ -61,7 +61,7 @@ When the initialization is finished, following content gains the power of retryi
 
 ### Config
 
-The `assetsRetry` takes an `AssetsRetryOptions`, which is defined as follows:
+The `assetsRetry` function takes an `AssetsRetryOptions`, which is defined as follows:
 ```ts
 interface AssetsRetryOptions {
     maxRetryCount: number;
