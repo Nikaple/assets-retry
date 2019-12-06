@@ -19,6 +19,7 @@ exports.hasOwn = Object.prototype.hasOwnProperty;
  * @returns {R}
  */
 exports.safeCall = function (func, thisArg, args) {
+    // eslint-disable-next-line
     if (typeof func !== 'function') {
         return null;
     }

@@ -53,6 +53,7 @@ var getHookedScriptDescriptors = function (self, opts) {
                             if (userModifiedSrc === null) {
                                 return;
                             }
+                            // eslint-disable-next-line
                             if (typeof userModifiedSrc !== 'string') {
                                 throw new Error('a string should be returned in `onRetry` function');
                             }
@@ -166,9 +167,11 @@ var hookPrototype = function (target, opts) {
  */
 function initAsync(opts) {
     hookCreateElement(opts);
+    // eslint-disable-next-line
     if (typeof Node !== 'undefined') {
         hookPrototype(Node.prototype, opts);
     }
+    // eslint-disable-next-line
     if (typeof Element !== 'undefined') {
         hookPrototype(Element.prototype, opts);
     }

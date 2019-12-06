@@ -13,6 +13,7 @@ function init(opts) {
     try {
         util_1.setDefault(opts, constants_1.maxRetryCountProp, 3);
         util_1.setDefault(opts, constants_1.onRetryProp, util_1.identity);
+        // eslint-disable-next-line
         if (typeof opts[constants_1.domainProp] !== 'object') {
             throw new Error('opts.domain cannot be non-object.');
         }
