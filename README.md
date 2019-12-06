@@ -113,8 +113,7 @@ type Domain = string[] | { [x: string]: string; }
 
 ### Acknowledgement
 
-![RealWorld](./public/realworld.png)
-![BrowserStack](./public/browserstack.svg)
+<img src="./public/realworld.png" alt="RealWorld" width="400" /><img src="./public/browser-stack.svg" alt="BrowserStack" width="250" />
 
 1. The example projects are based on amazing [RealWorld](https://realworld.io) demo apps.
 2. Cross browser testing are based on the rather excellent [BrowserStack](http://browserstack.com/) UI testing technology.
