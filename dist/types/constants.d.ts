@@ -1,0 +1,15 @@
+export declare const retryTimesProp = "retryTimes";
+export declare const succeededProp = "succeeded";
+export declare const failedProp = "failed";
+export declare const maxRetryCountProp = "maxRetryCount";
+export declare const onRetryProp = "onRetry";
+export declare const domainProp = "domain";
+export declare const innerScriptProp = "_$assetsRetryScript";
+export declare const innerOnloadProp = "_$assetsRetryOnload";
+export declare const innerOnerrorProp = "_$assetsRetryOnerror";
+export declare const scriptTag = "script";
+export declare const linkTag = "link";
+export declare const hookedIdentifier = "data-assets-retry-hooked";
+export declare const retryIdentifier = "data-retry-id";
+export declare const win: Window & typeof globalThis;
+export declare const doc: Document;
