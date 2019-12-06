@@ -113,4 +113,8 @@ type Domain = string[] | { [x: string]: string; }
 
 ### Acknowledgement
 
-Thanks for the [realworld.io](https://realworld.io) project for the amazing demo apps.
+![RealWorld](./public/realworld.png)
+![BrowserStack](./public/browserstack.svg)
+
+1. The example projects are based on amazing [RealWorld](https://realworld.io) demo apps.
+2. Cross browser testing are based on the rather excellent [BrowserStack](http://browserstack.com/) UI testing technology.
