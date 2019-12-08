@@ -12,7 +12,8 @@ describe('prepareDomainMap', () => {
         expect(prepareDomainMap(['a', 'b'])).toEqual({ a: 'b', b: 'a' })
     })
     it('accepts object', () => {
-        expect(prepareDomainMap({ a: 'b', b: 'c' })).toEqual({ a: 'b', b: 'c' })
+        const obj = { a: 'b', b: 'c' };
+        expect(prepareDomainMap(obj)).toBe(obj);
     })
 })
 
