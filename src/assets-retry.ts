@@ -32,6 +32,10 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
         if (typeof opts[domainProp] !== 'object') {
             throw new Error('opts.domain cannot be non-object.')
         }
+        const invalidOptions = Object.keys(opts).filter(key => [maxRetryCountProp, onRetryProp, domainProp].indexOf(key) === -1)
+        if (invalidOptions.length > 0) {
+            throw new Error('option name: ' + invalidOptions.join(', ') + ' is not valid.')
+        }
         const innerOpts: InnerAssetsRetryOptions = {
             [maxRetryCountProp]: opts[maxRetryCountProp],
             [onRetryProp]: opts[onRetryProp],
@@ -44,6 +48,6 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
         }
         return retryCollector
     } catch (e) {
-        console.error('[assetsRetry] error captured')
+        console.error('[assetsRetry] error captured', e)
     }
 }
