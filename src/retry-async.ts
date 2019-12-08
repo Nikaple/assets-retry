@@ -99,7 +99,7 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                             if (typeof userModifiedSrc !== 'string') {
                                 throw new Error('a string should be returned in `onRetry` function')
                             }
-                            if (currentCollector[retryTimesProp] < maxRetryCount) {
+                            if (currentCollector[retryTimesProp] <= maxRetryCount) {
                                 loadNextScript(self[innerScriptProp], userModifiedSrc)
                             } else {
                                 safeCall(self[innerOnerrorProp], self[innerScriptProp], event)

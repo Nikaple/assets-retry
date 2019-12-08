@@ -57,7 +57,7 @@ var getHookedScriptDescriptors = function (self, opts) {
                             if (typeof userModifiedSrc !== 'string') {
                                 throw new Error('a string should be returned in `onRetry` function');
                             }
-                            if (currentCollector[constants_1.retryTimesProp] < maxRetryCount) {
+                            if (currentCollector[constants_1.retryTimesProp] <= maxRetryCount) {
                                 util_1.loadNextScript(self[constants_1.innerScriptProp], userModifiedSrc);
                             }
                             else {

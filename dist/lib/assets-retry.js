@@ -17,6 +17,10 @@ function init(opts) {
         if (typeof opts[constants_1.domainProp] !== 'object') {
             throw new Error('opts.domain cannot be non-object.');
         }
+        var invalidOptions = Object.keys(opts).filter(function (key) { return [constants_1.maxRetryCountProp, constants_1.onRetryProp, constants_1.domainProp].indexOf(key) === -1; });
+        if (invalidOptions.length > 0) {
+            throw new Error('option name: ' + invalidOptions.join(', ') + ' is not valid.');
+        }
         var innerOpts = (_a = {},
             _a[constants_1.maxRetryCountProp] = opts[constants_1.maxRetryCountProp],
             _a[constants_1.onRetryProp] = opts[constants_1.onRetryProp],
@@ -30,7 +34,7 @@ function init(opts) {
         return collector_1.retryCollector;
     }
     catch (e) {
-        console.error('[assetsRetry] error captured');
+        console.error('[assetsRetry] error captured', e);
     }
 }
 exports.default = init;

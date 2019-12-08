@@ -63,7 +63,6 @@ function initSync(opts) {
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function');
         }
-        console.log('[document.onerror]', userModifiedUrl);
         var onloadCallback = function () {
             currentCollector[constants_1.succeededProp].push(userModifiedUrl);
         };

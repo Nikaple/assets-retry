@@ -35,6 +35,9 @@ exports.safeCall = function (func, thisArg, args) {
  */
 exports.stringReplace = function (current, oldStr, newStr) {
     var idx = current.indexOf(oldStr);
+    if (idx === -1) {
+        return current;
+    }
     return current.substring(0, idx) + newStr + current.substring(idx + oldStr.length);
 };
 /**
@@ -83,7 +86,7 @@ exports.collectPropertyNames = function (obj) {
         keys = keys.concat(Object.keys(getProto(obj)));
         obj = getProto(obj);
     }
-    return keys;
+    return keys.filter(function (key) { return key !== 'constructor'; });
 };
 /**
  * @example
@@ -116,7 +119,6 @@ exports.loadNextScript = function ($script, newSrc, onload) {
     // use `document.write` to ensure the correctness
     // of loading order
     if (document.readyState === 'loading') {
-        console.log('[document.write]', newSrc);
         var retryId = Math.random()
             .toString(36)
             .slice(2);
@@ -132,7 +134,6 @@ exports.loadNextScript = function ($script, newSrc, onload) {
         return;
     }
     var $newScript = constants_1.doc.createElement(constants_1.scriptTag);
-    console.log('[document.createElement]', newSrc);
     // copy script properties except src:
     // type, noModule, charset, async, defer,
     // crossOrigin, text, referrerPolicy, event,

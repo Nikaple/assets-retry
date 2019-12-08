@@ -40,6 +40,9 @@ export const safeCall = function<T, R>(
  */
 export const stringReplace = function(current: string, oldStr: string, newStr: string) {
     const idx = current.indexOf(oldStr)
+    if (idx === -1) {
+        return current;
+    }
     return current.substring(0, idx) + newStr + current.substring(idx + oldStr.length)
 }
 
@@ -86,12 +89,12 @@ export const collectPropertyNames = function(obj: any) {
         : function(x: any) {
               return x.__proto__
           }
-    let keys = Object.keys(obj)
+    let keys = Object.keys(obj);
     while (getProto(obj)) {
         keys = keys.concat(Object.keys(getProto(obj)))
         obj = getProto(obj)
     }
-    return keys
+    return keys.filter(key => key !== 'constructor');
 }
 
 /**
@@ -128,7 +131,6 @@ export const loadNextScript = function(
     // use `document.write` to ensure the correctness
     // of loading order
     if (document.readyState === 'loading') {
-        console.log('[document.write]', newSrc)
         const retryId = Math.random()
             .toString(36)
             .slice(2)
@@ -146,7 +148,6 @@ export const loadNextScript = function(
         return
     }
     const $newScript = doc.createElement(scriptTag)
-    console.log('[document.createElement]', newSrc)
     // copy script properties except src:
     // type, noModule, charset, async, defer,
     // crossOrigin, text, referrerPolicy, event,

@@ -71,7 +71,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function')
         }
-        console.log('[document.onerror]', userModifiedUrl)
         const onloadCallback = () => {
             currentCollector[succeededProp].push(userModifiedUrl)
         }
