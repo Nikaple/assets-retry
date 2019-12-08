@@ -20,7 +20,7 @@ pre {
 }
 
 #cssSync {
-  background-image: url('/test/not-exist/background-image-sync.png');
+  background-image: url('/e2e/not-exist/images/background-image-sync.png');
   background-size: contain;
   background-repeat: no-repeat;
 }

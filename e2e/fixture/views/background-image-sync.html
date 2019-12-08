@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var stat = window.assetsRetry({ domain: ['/e2e/not-exist', '/e2e/fixture'], maxRetryCount: 1 });
+    </script>
+    <link type="text/css" rel="stylesheet" href="/e2e/fixture/styles/sync.css">
+</head>
+<body>
+    <div id="cssSync" style="height: 60px"></div>
+</body>
+</html>

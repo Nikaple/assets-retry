@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var stat = window.assetsRetry({ domain: ['/e2e/not-exist', '/e2e/fixture'], maxRetryCount: 1 });
+    </script>
+</head>
+<body>
+    <script type="text/javascript">
+        var loadScript = function(src, cb) {
+            var $script = document.createElement('script')
+            $script.src = src;
+            var onComplete = function(event) {
+                $script.onload = $script.onerror = null;
+                cb(event)
+            }
+            $script.onload = onComplete;
+            $script.onerror = onComplete;
+            document.getElementsByTagName('head')[0].appendChild($script);
+        }
+        window.onload = function() {
+            loadScript('/e2e/not-exist/scripts/async.js', function(event) {
+                document.body.innerHTML += '<div id="result">' + event.type + '</div>'
+            })
+            loadScript('/e2e/not-exist/scripts/not-exist-async.js', function(event) {
+                document.body.innerHTML += '<div id="not-exist-result">' + event.type + '</div>'
+            })
+        }
+    </script>
+</body>
+</html>

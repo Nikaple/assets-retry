@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var stat = window.assetsRetry({ domain: ['/e2e/not-exist', '/e2e/fixture'], maxRetryCount: 1 });
+    </script>
+</head>
+<body>
+    <script src="/e2e/not-exist/scripts/vendor.js"></script>
+    <script src="/e2e/not-exist/scripts/not-exist-vendor.js"></script>
+</body>
+</html>

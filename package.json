@@ -21,9 +21,11 @@
   "scripts": {
     "lint": "eslint --fix -f codeFrame 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "tsc --module commonjs && rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
-    "start": "rollup -c rollup.config.ts -w",
+    "build": "tsc --module commonjs && __RETRY_IMAGE__=true rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
+    "start": "__RETRY_IMAGE__=true rollup -c rollup.config.ts -w",
     "test": "jest --coverage",
+    "e2e": "jest -c jest.config.e2e.js",
+    "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand",
     "test:watch": "jest --coverage --watch",
     "test:prod": "npm run lint && npm run test -- --no-cache",
     "deploy-docs": "ts-node tools/gh-pages-publish",
@@ -48,33 +50,6 @@
     "commitizen": {
       "path": "node_modules/cz-conventional-changelog"
     }
-  },
-  "jest": {
-    "transform": {
-      ".(ts|tsx)": "ts-jest"
-    },
-    "testEnvironment": "jsdom",
-    "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js"
-    ],
-    "coveragePathIgnorePatterns": [
-      "/node_modules/",
-      "/test/"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "branches": 90,
-        "functions": 95,
-        "lines": 95,
-        "statements": 95
-      }
-    },
-    "collectCoverageFrom": [
-      "src/*.{js,ts}"
-    ]
   },
   "prettier": {
     "semi": false,
@@ -107,6 +82,9 @@
     "husky": "^4.0.0-beta.5",
     "jest": "^24.9.0",
     "jest-config": "^24.9.0",
+    "jest-environment-jsdom": "^24.9.0",
+    "jest-environment-jsdom-global": "^1.2.0",
+    "jest-environment-selenium": "^0.2.0",
     "lint-staged": "^9.5.0",
     "lodash.camelcase": "^4.3.0",
     "prettier": "^1.14.3",
@@ -118,14 +96,19 @@
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-uglify": "^6.0.3",
     "semantic-release": "^15.13.31",
+    "serve": "^11.2.0",
     "shelljs": "^0.8.3",
     "travis-deploy-once": "^5.0.9",
     "ts-jest": "^24.2.0",
     "ts-node": "^8.5.4",
+    "tslib": "^1.10.0",
     "tslint": "^5.11.0",
     "tslint-config-prettier": "^1.15.0",
     "tslint-config-standard": "^9.0.0",
     "typedoc": "^0.15.0",
     "typescript": "^3.7.2"
+  },
+  "dependencies": {
+    "@types/selenium-webdriver": "^4.0.5"
   }
 }

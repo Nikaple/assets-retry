@@ -1,6 +1,7 @@
 vendor();
 console.log('sync')
-if (window.loadedScripts) window.loadedScripts.sync = true;
+window.loadedScripts = window.loadedScripts || {};
+window.loadedScripts.sync = true;
 
 var loadScript = function(src, cb) {
     var $script = document.createElement('script')
@@ -23,11 +24,11 @@ var loadCss = function(href) {
 }
 
 window.onload = function() {
-    loadScript('/test/not-exist/async.js', function(event) {
+    loadScript('/e2e/not-exist/scripts/async.js', function(event) {
         var statistics = '';
-        var winStat = window.assetsRetryStatistics;
+        var winStat = window.stat;
         for (var key in winStat) {
-            var curStat = window.assetsRetryStatistics[key]
+            var curStat = window.stat[key]
             var stat = {
                 retryTimes: curStat.retryTimes,
                 failedLength: curStat.failed.length,
@@ -35,8 +36,7 @@ window.onload = function() {
             }
             statistics += key + ': \n' + JSON.stringify(stat) + '\n\n';
         }
-        console.log(statistics)
         document.body.innerHTML += '<pre style="font-size: 14px">' + statistics + '</pre>';
     })
 }
-loadCss('/test/not-exist/async.css')
+loadCss('/e2e/not-exist/styles/async.css')

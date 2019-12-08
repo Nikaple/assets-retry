@@ -11,5 +11,5 @@ setTimeout(function() {
         'img tag loaded: ' + /fixture/.test($id('img').src) + '\n' + 
         'image in sync css: ' + /fixture/.test(getStyle($id('cssSync')).backgroundImage) + '\n' +
         'image in async css: ' + /fixture/.test(getStyle($id('cssAsync')).backgroundImage) + '\n';
-    document.getElementById('result').innerHTML = '<pre>' + result + '</pre>';//'Test passed!' + (JSON.stringify(window.loadedScripts)) + (isCssLoaded ? '1' : '0') + (isImageLoaded ? '1' : '0');
+    document.body.innerHTML += '<div id="result"><pre>' + result + '</pre></div>';
 }, 5000)

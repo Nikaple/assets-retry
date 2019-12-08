@@ -10,7 +10,7 @@ body {
 }
 
 #cssAsync {
-    background-image: url('/test/not-exist/background-image-async.png');
+    background-image: url('/e2e/not-exist/images/background-image-async.png');
     background-size: contain;
     background-repeat: no-repeat;
 }
