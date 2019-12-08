@@ -182,22 +182,6 @@ const hookPrototype = function(target: any, opts: InnerAssetsRetryOptions) {
             const args = [].slice.call(arguments).map((item: any) => {
                 return hasOwn.call(item, innerScriptProp) ? item[innerScriptProp] : item
             })
-            if (__RETRY_IMAGE__) {
-                const isInsertOp =
-                    [
-                        'append',
-                        'appendChild',
-                        'insertBefore',
-                        'replaceChild',
-                        'insertAdjacentElement',
-                        'prepend'
-                    ].indexOf(key) > -1
-                if (isInsertOp && args[0] instanceof HTMLLinkElement) {
-                    args[0].addEventListener('load', () => {
-                        setTimeout(() => initCss(opts), 100)
-                    })
-                }
-            }
             return originalFunc.apply(this, args)
         }
         // keep original toString

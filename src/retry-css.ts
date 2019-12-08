@@ -16,7 +16,6 @@ const supportRules = function(styleSheet: any) {
 const processRules = function(
     name: UrlProperty,
     rule: CSSStyleRule,
-    ruleIndex: number,
     styleSheet: CSSStyleSheet,
     opts: InnerAssetsRetryOptions
 ) {
@@ -54,11 +53,7 @@ const processRules = function(
     }
 }
 
-export default function initCss(opts: InnerAssetsRetryOptions) {
-    // detect is support styleSheets
-    const supportStyleSheets = document.styleSheets && document.styleSheets[0]
-    if (!supportStyleSheets) return false
-    const styleSheets = arrayFrom(doc.styleSheets)
+const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOptions) => {
     const urlProperties: UrlProperty[] = ['backgroundImage', 'borderImage', 'listStyleImage']
     // TODO: iterating stylesheets may cause performance issues
     // maybe find other approaches?
@@ -73,7 +68,7 @@ export default function initCss(opts: InnerAssetsRetryOptions) {
         const styleRules = arrayFrom(styleSheet.rules as CSSStyleRule[])
         styleRules.forEach((rule, ruleIndex) => {
             urlProperties.forEach(cssProperty => {
-                processRules(cssProperty, rule, ruleIndex, styleSheet, opts)
+                processRules(cssProperty, rule, styleSheet, opts)
             })
         })
 
@@ -81,4 +76,20 @@ export default function initCss(opts: InnerAssetsRetryOptions) {
             handledStylesheets[styleSheet.href] = true
         }
     })
+}
+
+export default function initCss(opts: InnerAssetsRetryOptions) {
+    // detect is support styleSheets
+    const supportStyleSheets = document.styleSheets
+    if (!supportStyleSheets) return false
+    const styleSheets = arrayFrom(doc.styleSheets)
+    let currentStyleSheetLength = styleSheets.length;
+    setInterval(() => {
+        const newStyleSheets = arrayFrom(doc.styleSheets)
+        const newStyleSheetsLength = newStyleSheets.length;
+        if (newStyleSheetsLength > currentStyleSheetLength) {
+            processStyleSheets(newStyleSheets, opts)
+            currentStyleSheetLength = newStyleSheetsLength
+        }
+    }, 250)
 }
