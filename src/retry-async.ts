@@ -200,11 +200,11 @@ export default function initAsync(opts: InnerAssetsRetryOptions) {
     hookCreateElement(opts)
     // eslint-disable-next-line
     if (typeof Node !== 'undefined') {
-        hookPrototype(Node.prototype, opts)
+        hookPrototype(Node.prototype)
     }
     // eslint-disable-next-line
     if (typeof Element !== 'undefined') {
-        hookPrototype(Element.prototype, opts)
+        hookPrototype(Element.prototype)
     }
     return retryCollector
 }
