@@ -23,7 +23,7 @@ const processRules = function(
     if (/^url\(["']?data:/.test(targetRule)) {
         return
     }
-    const [_, originalUrl] = targetRule.match(/^url\(["|'](.*)["|']\)/) || []
+    const [_, originalUrl] = targetRule.match(/^url\(["']?([^)]+)["']?\)/) || []
     if (!originalUrl) {
         return
     }
@@ -51,13 +51,6 @@ const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOpt
     // TODO: iterating stylesheets may cause performance issues
     // maybe find other approaches?
     styleSheets.forEach((styleSheet: any) => {
-        // styleSheet
-        if (!supportRules(styleSheet)) {
-            return
-        }
-        if (handledStylesheets[styleSheet.href]) {
-            return
-        }
         const styleRules = arrayFrom(getCssRules(styleSheet)) as CSSStyleRule[]
         styleRules.forEach(rule => {
             urlProperties.forEach(cssProperty => {
@@ -71,9 +64,9 @@ const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOpt
     })
 }
 
-const getStyleSheetsInDomainMap = function(styleSheets: StyleSheetList, domainMap: DomainMap) {
-    return arrayFrom(styleSheets).filter(styleSheet => {
-        if (!styleSheet.href) {
+const getStyleSheetsToBeHandled = function(styleSheets: StyleSheetList, domainMap: DomainMap) {
+    return (arrayFrom(styleSheets) as CSSStyleSheet[]).filter(styleSheet => {
+        if (!styleSheet.href || handledStylesheets[styleSheet.href] || !supportRules(styleSheet)) {
             return false;
         }
         const currentDomain = getCurrentDomain(styleSheet.href, domainMap);
@@ -87,14 +80,10 @@ export default function initCss(opts: InnerAssetsRetryOptions) {
     const supportStyleSheets = doc.styleSheets
     const domainMap = opts.domain
     if (!supportStyleSheets) return false
-    const styleSheets = getStyleSheetsInDomainMap(doc.styleSheets, domainMap)
-    let currentStyleSheetLength = styleSheets.length;
     setInterval(() => {
-        const newStyleSheets = getStyleSheetsInDomainMap(doc.styleSheets, domainMap)
-        const newStyleSheetsLength = newStyleSheets.length;
-        if (newStyleSheetsLength > currentStyleSheetLength) {
+        const newStyleSheets = getStyleSheetsToBeHandled(doc.styleSheets, domainMap)
+        if (newStyleSheets.length > 0) {
             processStyleSheets(newStyleSheets, opts)
-            currentStyleSheetLength = newStyleSheetsLength
         }
     }, 250)
 }
