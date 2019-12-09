@@ -23,7 +23,7 @@ const processRules = function(
     if (/^url\(["']?data:/.test(targetRule)) {
         return
     }
-    const [_, originalUrl] = targetRule.match(/^url\(["']?([^)]+)["']?\)/) || []
+    const [_, originalUrl] = targetRule.match(/^url\(["']?(.+?)["']?\)/) || []
     if (!originalUrl) {
         return
     }
