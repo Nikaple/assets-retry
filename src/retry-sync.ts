@@ -1,15 +1,16 @@
-import { stringReplace, loadNextScript, loadNextLink } from './util'
+import { stringReplace, loadNextScript, loadNextLink, hashTarget, randomString, arrayFrom, getCssRules } from './util'
 import { InnerAssetsRetryOptions } from './assets-retry'
 import { extractInfoFromUrl } from './url'
 import {
     retryTimesProp,
     failedProp,
     hookedIdentifier,
-    maxRetryCountProp,
     succeededProp,
-    win,
-    doc
+    doc,
+    retryIdentifier
 } from './constants'
+
+const retryCache: { [x: string]: boolean } = {}
 
 /**
  * init synchronous retrying of assets,
@@ -38,7 +39,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
      * @param {ErrorEvent} event
      * @returns
      */
-    const errorHandler = function(event: ErrorEvent) {
+    const errorHandler = function(event: Event) {
         if (!event) {
             return
         }
@@ -71,6 +72,12 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function')
         }
+        // cache retried elements
+        const elementId = hashTarget(target);
+        if (retryCache[elementId]) {
+            return;
+        }
+        retryCache[elementId] = true;
         const onloadCallback = () => {
             currentCollector[succeededProp].push(userModifiedUrl)
         }
@@ -83,10 +90,45 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         if (target instanceof HTMLImageElement && target.src) {
+            target.setAttribute(retryIdentifier, randomString())
             target.src = userModifiedUrl
             target.onload = onloadCallback
         }
     }
 
+    /**
+     * test is link element loaded in load event
+     *
+     * @param {Event} event
+     */
+    const loadHandler = function(event: Event) {
+        if (!event) {
+            return;
+        }
+        const target = event.target || event.srcElement;
+        // only handle link element
+        if (!(target instanceof HTMLLinkElement)) {
+            return;
+        }
+        const supportStyleSheets = doc.styleSheets
+        // do not support styleSheets API
+        if (!supportStyleSheets) {
+            return;
+        }
+        const styleSheets = arrayFrom(doc.styleSheets) as CSSStyleSheet[]
+        const targetStyleSheet = styleSheets.filter(styleSheet => {
+            return styleSheet.href === target.href
+        })[0]
+        // do not support css rules API
+        if (!targetStyleSheet.rules && !targetStyleSheet.cssRules) {
+            return;
+        }
+        const styleRules = arrayFrom(getCssRules(targetStyleSheet))
+        if (styleRules.length === 0) {
+            errorHandler(event)
+        }
+    }
+
     doc.addEventListener('error', errorHandler, true)
+    doc.addEventListener('load', loadHandler, true)
 }

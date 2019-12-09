@@ -11,8 +11,6 @@ import {
     isFunctionProperty,
 } from '../src/util'
 
-declare const jsdom: any;
-
 describe('basic utilities', () => {
     it('tests identity', () => {
         const obj = {}
@@ -28,6 +26,7 @@ describe('basic utilities', () => {
 
 describe('safeCall', () => {
     it('can handle undefined or null', () => {
+        // eslint-disable-next-line
         expect(safeCall(undefined as any, {}, {})).toBe(null)
         expect(safeCall(null as any, {}, {})).toBe(null)
     })

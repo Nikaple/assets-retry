@@ -117,6 +117,17 @@ export const isFunctionProperty = function(proto: any, key: string) {
 }
 
 /**
+ * on some browsers, calling `document.write` when 
+ * `document.readyState` is `loading` will clear the whole
+ * page, which is not what we wanted.
+ *
+ * @returns
+ */
+export const supportDocumentWrite = () => {
+    return !(/Edge|MSIE|rv:/i.test(navigator.userAgent))
+}
+
+/**
  * loads a new script element by previous failed script element
  *
  * @param {HTMLScriptElement} $script previous script element
@@ -130,16 +141,14 @@ export const loadNextScript = function(
     // when dealing with failed script tags in html,
     // use `document.write` to ensure the correctness
     // of loading order
-    if (document.readyState === 'loading') {
-        const retryId = Math.random()
-            .toString(36)
-            .slice(2)
+    if (doc.readyState === 'loading' && supportDocumentWrite()) {
+        const retryId = randomString()
         const newHtml = $script.outerHTML
             // delete previous retry id
             .replace(/data-retry-id="[^"]+"/, '')
             .replace(/src=(?:"[^"]+"|.+)([ >])/, `${retryIdentifier}=${retryId} src="${newSrc}"$1`)
-        document.write(newHtml)
-        const newScript = document.querySelector(
+        doc.write(newHtml)
+        const newScript = doc.querySelector(
             `script[${retryIdentifier}="${retryId}"]`
         ) as HTMLScriptElement
         if (newScript) {
@@ -164,12 +173,44 @@ export const loadNextScript = function(
     $newScript.src = newSrc
     $newScript.onload = $script.onload
     $newScript.onerror = $script.onerror
+    $newScript.setAttribute(retryIdentifier, randomString())
     // webpack nonce for csp
     const originalNonce = $script.getAttribute('nonce')
     if (originalNonce) {
         $newScript.setAttribute('nonce', originalNonce)
     }
     doc.getElementsByTagName('head')[0].appendChild($newScript)
+}
+
+
+/**
+ * get rules from styleSheet
+ *
+ * @param {CSSStyleSheet} styleSheet
+ * @returns
+ */
+export const getCssRules = function(styleSheet: CSSStyleSheet) {
+    if (styleSheet.rules) {
+        return styleSheet.rules
+    }
+    if (styleSheet.cssRules) {
+        return styleSheet.cssRules
+    }
+    return []
+}
+/**
+ * test if current browser support CSSRuleList
+ *
+ * @param {CSSStyleSheet} styleSheet
+ * @returns
+ */
+export const supportRules = function(styleSheet: CSSStyleSheet) {
+    try {
+        const rules = getCssRules(styleSheet)
+        return rules.length > 0
+    } catch (_) {
+        return false
+    }
 }
 
 /**
@@ -195,5 +236,22 @@ export const loadNextLink = function($link: HTMLLinkElement, newHref: string, on
     })
     $newLink.href = newHref
     $newLink.onload = onload
+    $newLink.setAttribute(retryIdentifier, randomString())
     doc.getElementsByTagName('head')[0].appendChild($newLink)
 }
+
+export const hashTarget = function(element: EventTarget | null) {
+    if (!element) {
+        return 'null'
+    }
+    if (!(element instanceof HTMLElement)) {
+        return 'not_supported'
+    }
+    const nodeName = element.nodeName;
+    const src = (element as any).src;
+    const href = (element as any).href;
+    const dataRetryId = element.getAttribute(retryIdentifier);
+    return [nodeName, src, href, dataRetryId].join(';')
+}
+
+export const randomString = () => Math.random().toString(36).slice(2)

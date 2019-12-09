@@ -21,12 +21,10 @@ import {
     scriptTag,
     hookedIdentifier,
     doc,
-    win
 } from './constants'
 import { retryCollector } from './collector'
 import { prepareDomainMap, extractInfoFromUrl } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
-import initCss from './retry-css'
 
 export interface HookedScript {
     [innerScriptProp]: HTMLScriptElement
@@ -38,7 +36,10 @@ export interface HookedScript {
 // (including prototype properties) because it's big (length > 200)
 // otherwise it would be calculated every time when
 // a script request failed.
-const scriptProperties = collectPropertyNames(HTMLScriptElement.prototype)
+let scriptProperties: string[];
+try {
+    scriptProperties = collectPropertyNames(HTMLScriptElement.prototype)
+} catch (_) { /* noop */ }
 
 /**
  * create the descriptor of hooked script object,
@@ -174,7 +175,7 @@ const hookCreateElement = function(opts: InnerAssetsRetryOptions) {
  *
  * @param {any} target hook target
  */
-const hookPrototype = function(target: any, opts: InnerAssetsRetryOptions) {
+const hookPrototype = function(target: any) {
     const functionKeys = Object.keys(target).filter(key => isFunctionProperty(target, key))
     functionKeys.forEach(key => {
         const originalFunc = target[key]

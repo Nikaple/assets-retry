@@ -8,7 +8,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Nikaple/assets-retry/badge.svg?branch=master)](https://coveralls.io/github/Nikaple/assets-retry?branch=master)
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
 
-当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 5 KB。
+当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 6 KB。
 
 ![Demo GIF](./public/assets-retry.gif)
 

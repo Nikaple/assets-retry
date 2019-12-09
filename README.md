@@ -8,7 +8,7 @@ English | [简体中文](./README-cn.md)
 [![Coverage Status](https://coveralls.io/repos/github/Nikaple/assets-retry/badge.svg?branch=master)](https://coveralls.io/github/Nikaple/assets-retry?branch=master)
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
 
-A tiny 5 KB non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, even works with dynamic import!
+A tiny 6 KB non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, even works with dynamic import!
 
 ![Demo GIF](./public/assets-retry.gif)
 ### [Demo URL](https://nikaple.com/assets-retry/vue/)

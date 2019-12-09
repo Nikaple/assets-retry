@@ -3,7 +3,7 @@ module.exports = {
         browser: true,
         node: true
     },
-    ignorePatterns: ["jest*"],
+    ignorePatterns: ['jest*'],
     parser: '@typescript-eslint/parser',
     parserOptions: {
         ecmaVersion: 6,
@@ -35,6 +35,10 @@ module.exports = {
         '@typescript-eslint/no-misused-new': 'error',
         '@typescript-eslint/no-unnecessary-qualifier': 'error',
         '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }
+        ],
         '@typescript-eslint/prefer-namespace-keyword': 'error',
         '@typescript-eslint/quotes': 'off',
         '@typescript-eslint/semi': ['off', null],

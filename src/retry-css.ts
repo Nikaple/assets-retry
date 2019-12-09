@@ -1,18 +1,12 @@
-import { arrayFrom, stringReplace, toSlug } from './util'
+import { arrayFrom, stringReplace, toSlug, supportRules, getCssRules } from './util'
 import { doc } from './constants'
-import { getCurrentDomain } from './url'
+import { getCurrentDomain, DomainMap } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
 
 type UrlProperty = 'backgroundImage' | 'borderImage' | 'listStyleImage'
 // cache
 const handledStylesheets: { [x: string]: boolean } = {}
-const supportRules = function(styleSheet: any) {
-    try {
-        return styleSheet.rules && styleSheet.rules.length > 0
-    } catch (_) {
-        return false
-    }
-}
+
 const processRules = function(
     name: UrlProperty,
     rule: CSSStyleRule,
@@ -38,16 +32,15 @@ const processRules = function(
         return
     }
     const urlList = Object.keys(domainMap)
-        .filter(domain => domain !== currentDomain)
         .map(domain => {
             const newUrl = stringReplace(originalUrl, currentDomain, domain)
             const userModifiedUrl = onRetry(newUrl, originalUrl, null)
             return `url("${userModifiedUrl}")`
         })
         .join(',')
-    const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList}; }`
+    const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList} !important; }`
     try {
-        styleSheet.insertRule(cssText, styleSheet.rules.length)
+        styleSheet.insertRule(cssText, getCssRules(styleSheet).length)
     } catch (_) {
         styleSheet.insertRule(cssText, 0)
     }
@@ -65,8 +58,8 @@ const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOpt
         if (handledStylesheets[styleSheet.href]) {
             return
         }
-        const styleRules = arrayFrom(styleSheet.rules as CSSStyleRule[])
-        styleRules.forEach((rule, ruleIndex) => {
+        const styleRules = arrayFrom(getCssRules(styleSheet)) as CSSStyleRule[]
+        styleRules.forEach(rule => {
             urlProperties.forEach(cssProperty => {
                 processRules(cssProperty, rule, styleSheet, opts)
             })
@@ -78,14 +71,26 @@ const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOpt
     })
 }
 
+const getStyleSheetsInDomainMap = function(styleSheets: StyleSheetList, domainMap: DomainMap) {
+    return arrayFrom(styleSheets).filter(styleSheet => {
+        if (!styleSheet.href) {
+            return false;
+        }
+        const currentDomain = getCurrentDomain(styleSheet.href, domainMap);
+        return !!currentDomain
+    })
+
+}
+
 export default function initCss(opts: InnerAssetsRetryOptions) {
     // detect is support styleSheets
-    const supportStyleSheets = document.styleSheets
+    const supportStyleSheets = doc.styleSheets
+    const domainMap = opts.domain
     if (!supportStyleSheets) return false
-    const styleSheets = arrayFrom(doc.styleSheets)
+    const styleSheets = getStyleSheetsInDomainMap(doc.styleSheets, domainMap)
     let currentStyleSheetLength = styleSheets.length;
     setInterval(() => {
-        const newStyleSheets = arrayFrom(doc.styleSheets)
+        const newStyleSheets = getStyleSheetsInDomainMap(doc.styleSheets, domainMap)
         const newStyleSheetsLength = newStyleSheets.length;
         if (newStyleSheetsLength > currentStyleSheetLength) {
             processStyleSheets(newStyleSheets, opts)

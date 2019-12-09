@@ -2,8 +2,8 @@ module.exports = {
     transform: {
         '.(ts|tsx)': 'ts-jest'
     },
-    testEnvironment: 'jest-environment-jsdom-global',
-    testRegex: '(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$',
+    testEnvironment: 'jsdom',
+    testRegex: 'test/[A-Za-z-_]+\\.test\\.(ts|tsx|js)$',
     moduleFileExtensions: ['ts', 'tsx', 'js'],
     coveragePathIgnorePatterns: ['/node_modules/', '/test/'],
     coverageThreshold: {
