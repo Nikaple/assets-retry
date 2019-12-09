@@ -16,9 +16,13 @@ A tiny 6 KB non-intrusive library to retry your assets (scripts, stylesheets, im
 ## Table of Contents
 
 - [Installation](#installation)
+    + [Install with npm](#install-with-npm)
+    + [Use inline script directly](#use-inline-script-directly)
 - [Usage](#usage)
 - [Config](#config)
 - [Todo](#todo)
+- [Browser Support](#browser-support)
+- [Acknowledgement](#acknowledgement)
 
 ### Installation
 
@@ -101,6 +105,12 @@ type Domain = string[] | { [x: string]: string; }
 - [ ] Unit tests
 - [ ] BrowserStack compatibility test
 - [ ] more demo
+
+### Browser Support
+
+| <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 47+ ✔ | 15+ ✔ | 32+ ✔ | 10+ ✔ | 34+ ✔ | 10+ ✔ |
 
 ### NPM scripts
 -   `npm t`: Run test suite
