@@ -4,5 +4,6 @@ module.exports = {
     testEnvironmentOptions: {
         capabilities: { browserName: 'chrome' }
     },
+    moduleFileExtensions: ['ts', 'tsx', 'js'],
     testRegex: 'e2e\\/(.*)\\.e2e\\.(js|ts)'
 }
