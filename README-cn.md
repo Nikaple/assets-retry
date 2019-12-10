@@ -8,7 +8,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/Nikaple/assets-retry/badge.svg?branch=master)](https://coveralls.io/github/Nikaple/assets-retry?branch=master)
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
 
-当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 6 KB。
+当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 3 KB （gzipped）。
 
 ![Demo GIF](./public/assets-retry.gif)
 
@@ -185,8 +185,10 @@ function requireEnsure(chunkId) {
 
 ### 常见问题
 
-1. Q: 为什么我的页面在 Safari 上白屏了？
-   A: 不要在页面加载完成（ `window.onload` ）之前加载任何异步的脚本，这些脚本应该被同步加载。当你这么做的时候， Safari 浏览器会认为 DOM 还未加载完毕，但此时调用 `document.write`，却会清空页面。
+1. Q: 为什么 CSS 或 CSS 中的背景图片无法从备用域名加载？
+   A: 由于浏览器的安全策略，跨域的 CSS 默认无法动态获取 CSS 属性。修复方法：
+      1. 加载跨域 CSS 的 link 标签上添加 `crossorigin="anonymous"` 属性。
+      2. CDN 资源正确配置 [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) 头部
 
 ### NPM scripts
 -   `npm t`: Run test suite

@@ -8,7 +8,7 @@ English | [简体中文](./README-cn.md)
 [![Coverage Status](https://coveralls.io/repos/github/Nikaple/assets-retry/badge.svg?branch=master)](https://coveralls.io/github/Nikaple/assets-retry?branch=master)
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
 
-A tiny 6 KB non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, even works with dynamic import!
+A tiny non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, only 3 KB gzipped, even works with dynamic import!
 
 ![Demo GIF](./public/assets-retry.gif)
 ### [Demo URL](https://nikaple.com/assets-retry/vue/)
@@ -21,6 +21,7 @@ A tiny 6 KB non-intrusive library to retry your assets (scripts, stylesheets, im
 - [Usage](#usage)
 - [Config](#config)
 - [Todo](#todo)
+- [FAQ](#FAQ)
 - [Browser Support](#browser-support)
 - [Acknowledgement](#acknowledgement)
 
@@ -105,6 +106,13 @@ type Domain = string[] | { [x: string]: string; }
 - [ ] Unit tests
 - [ ] BrowserStack compatibility test
 - [ ] more demo
+
+### FAQ
+
+1. Q: Stylesheets or background images are not retried from backup domain, why?
+   A: Due to security policies of browsers, access to `cssRules` is not allowed for cross origin stylesheets by default. To fix this:
+      1. Add `crossorigin="anonymous"` attribute on link element for the cross origin stylesheet。
+      2. Make sure that [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) HTTP Header is correct.
 
 ### Browser Support
 
