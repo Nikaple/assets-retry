@@ -2,7 +2,7 @@ import initAsync from './retry-async'
 import initSync from './retry-sync'
 import initCss from './retry-css'
 import { RetryStatistics, retryCollector } from './collector'
-import { maxRetryCountProp, onRetryProp, domainProp } from './constants'
+import { maxRetryCountProp, onRetryProp, domainProp, win } from './constants'
 import { Domain, DomainMap, prepareDomainMap } from './url'
 import { setDefault, identity } from './util'
 
@@ -48,6 +48,6 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
         }
         return retryCollector
     } catch (e) {
-        console && console.error('[assetsRetry] error captured', e)
+        win.console && console.error('[assetsRetry] error captured', e)
     }
 }
