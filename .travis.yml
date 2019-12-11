@@ -1,18 +1,27 @@
 language: node_js
 cache:
-  directories:
-    - ~/.npm
+    directories:
+        - '~/.npm'
+env:
+    global:
+        secure: Do3w8CIuDLWYgT3YHgclaTHeVaz3e8sHq0FCx+tVPgikC3bGACRO3bMdQCJ0I/VyRuWjHJVmGeZNDiF8Lpd1LYABrVFz1IxjuILHyMPkotp1r6OVO7zko4fQ8kSm3/FVRPw0bg/alUXzyXFQvRRserOXvAsFRZHiSbDPyIXXCm8YRdrUSsqHxgIWJom/k+V1hzV1mkKo+J0K7z3SKkImHoXSZCq3dxgxn3brQUiuMBIAj+GMiJItx7xypFW0+sw8RjT9H2yDe5rR3Vv1l83BKmFiC4TkRasDZhXI5GybPxxQK3saAFI8pAy2l3bI7XqpTsA6feE5xd1RsvkmSBU/Zy3laHQRGOR8pYUXRKqIuBoKzfjUKwFBYoZ+WYzz/DIek9ZvpfhkMwc70W2OFDo5nWX5WBjeIrUnhsPwKp7sd1AdPgdoUWyc/yambnR9IjOk0RoYS7dyIpM4UH8MQcyZSCPaWOpzH762jb+1X2ieknKiVL1uH69BoQ7/Ki35z1wfQ6E9dIEr+qiy4r1GVuhjpDPTrP25h5l4wLeBbY8Zpu/214fbCRJl8/KdTrluzLy+EynAaH6WqodmIdidrylAcsKQgyNNDEe6yrBWEMRjDWBy6F8tTQKW0HAh+C7godSNyrki7wpQV8pOAtICNlTpuudU0Bj8Pqr/rSlr3UkwjYw=
 notifications:
-  email: false
+    email: false
+addons:
+    chrome: stable
 node_js:
-  - '10'
-  - '11'
+    - '10'
+    - '11'
 script:
-  - npm run test:prod && npm run build
+    - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then npm run e2e; fi'
+    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run e2e:bs:local&; npm run e2e:bs:test; fi'
+    - npm run test:prod && npm run build
 after_success:
-  - npm run travis-deploy-once "npm run report-coverage"
-  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run travis-deploy-once "npm run deploy-docs"; fi
-  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run travis-deploy-once "npm run semantic-release"; fi
+    - npm run travis-deploy-once "npm run report-coverage"
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
+      run travis-deploy-once "npm run deploy-docs"; fi
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
+      run travis-deploy-once "npm run semantic-release"; fi
 branches:
-  except:
-    - /^v\d+\.\d+\.\d+$/
+    except:
+        - "/^v\\d+\\.\\d+\\.\\d+$/"

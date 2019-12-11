@@ -7,6 +7,7 @@ English | [简体中文](./README-cn.md)
 [![Travis](https://img.shields.io/travis/Nikaple/assets-retry.svg)](https://travis-ci.org/Nikaple/assets-retry)
 [![Coverage Status](https://coveralls.io/repos/github/Nikaple/assets-retry/badge.svg?branch=master)](https://coveralls.io/github/Nikaple/assets-retry?branch=master)
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
+[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)](https://automate.browserstack.com/public-build/VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)
 
 A tiny non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, only 3 KB gzipped, even works with dynamic import!
 
@@ -104,7 +105,7 @@ type Domain = string[] | { [x: string]: string; }
 ### Todo
 
 - [ ] Unit tests
-- [ ] BrowserStack compatibility test
+- [x] BrowserStack compatibility test
 - [ ] more demo
 
 ### FAQ

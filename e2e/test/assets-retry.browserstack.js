@@ -1,3 +1,4 @@
+const capabilities = configuration.capabilities;
 const baseUri = `http://${capabilities['browserstack.user']}.browserstack.com`
 
 describe('BrowserStack', () => {
@@ -7,12 +8,13 @@ describe('BrowserStack', () => {
     }
     
     beforeEach(() => {
-        jest.setTimeout(process.env.TIMEOUT || 60000);
+        jest.setTimeout(capabilities.timeout || 60000);
     })
 
-    const targetInfo = process.env.MOBILE
-        ? `${process.env.DEVICE} ${process.env.BROWSER} ${process.env.OS_VERSION}`
-        : `${process.env.BROWSER} ${process.env.BROWSER_VERSION}`
+    const targetInfo = capabilities.realMobile
+        ? `${capabilities.device} ${capabilities.browserName} ${capabilities.os_version}`
+        : `${capabilities.browserName} ${capabilities.browser_version}`
+
     // BrowserStack is fairly slow, so we only run complex test
     it(`should be able to pass complex test on ${targetInfo}`, async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/all.html`)
