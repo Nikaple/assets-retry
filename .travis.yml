@@ -1,21 +1,32 @@
+dist: xenial
+services:
+    - xvfb
 language: node_js
 cache:
     directories:
         - '~/.npm'
 env:
     global:
-        secure: Do3w8CIuDLWYgT3YHgclaTHeVaz3e8sHq0FCx+tVPgikC3bGACRO3bMdQCJ0I/VyRuWjHJVmGeZNDiF8Lpd1LYABrVFz1IxjuILHyMPkotp1r6OVO7zko4fQ8kSm3/FVRPw0bg/alUXzyXFQvRRserOXvAsFRZHiSbDPyIXXCm8YRdrUSsqHxgIWJom/k+V1hzV1mkKo+J0K7z3SKkImHoXSZCq3dxgxn3brQUiuMBIAj+GMiJItx7xypFW0+sw8RjT9H2yDe5rR3Vv1l83BKmFiC4TkRasDZhXI5GybPxxQK3saAFI8pAy2l3bI7XqpTsA6feE5xd1RsvkmSBU/Zy3laHQRGOR8pYUXRKqIuBoKzfjUKwFBYoZ+WYzz/DIek9ZvpfhkMwc70W2OFDo5nWX5WBjeIrUnhsPwKp7sd1AdPgdoUWyc/yambnR9IjOk0RoYS7dyIpM4UH8MQcyZSCPaWOpzH762jb+1X2ieknKiVL1uH69BoQ7/Ki35z1wfQ6E9dIEr+qiy4r1GVuhjpDPTrP25h5l4wLeBbY8Zpu/214fbCRJl8/KdTrluzLy+EynAaH6WqodmIdidrylAcsKQgyNNDEe6yrBWEMRjDWBy6F8tTQKW0HAh+C7godSNyrki7wpQV8pOAtICNlTpuudU0Bj8Pqr/rSlr3UkwjYw=
+        secure: QqGhoH7nBSOGg9oAYj99fTZ/5JwWtx9OY+oy9jZknTSrTb8e8OFNoPyG9PuPJyQWpKANRRcXZJPBjMy8SsO6KvQZtA72zK/ShCDVPiivIXBjYS2q6OvzG7RzQZD0wClnLWKFYHDcCG7CBuP1A1HMJabBplcEA4jKidjGHV389J83XHFMIgMDdCDCN04ioVuhbdtFkhb6pqXA1qlaQu3MMC5MnXx2sj5yj61az23EVREmhBi8kp6cCBhCBP4pKY5XZBhWRCV6uPTaiMtB1uKaDSiiZWe61uRJdmL2Ed8k6aX7pPcIK8feZLvRoINZvPx//1jmgcUva+saMNTi6lRT/Wac1c2KtcuLA1flGeeTVDSKxjHQPakYbr8KVbvA0OlWiv1XA9Z8VAN+ytmVd+LOAPEXcVzEC5uO0ixR8BXbV2cQl7u3PNBlJJGZA+CkZSUViNDhWAZIA9DfRyjKlmrJR/3frnY/vltiDLSBhpnc/Hoy6Ugg1GXHt+aNSdWw2jidm9XmRxom17UtkjIqcqBOTQj1ZDuuHYTJPk1Z/S0Dz2XlB0qXFHfAPHjckZLFg5L1Sz90utSzhTFhEKb1ADicedfgWgEgss84+8kJqQIVzP+QHeCnPybCqIiRsr9DObvtRNY5WnyMc9vzT6gHurFgqUk//d6VZsUpdpZJjzCdjiw=
 notifications:
     email: false
 addons:
     chrome: stable
+    browserstack:
+        forcelocal: true
+        username: nikaplezhou1
+        access_key: ${BROWSERSTACK_KEY}
 node_js:
     - '10'
-    - '11'
 script:
-    - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then npm run e2e; fi'
-    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run e2e:bs:local&; npm run e2e:bs:test; fi'
+    - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then xvfb-run -a npm run e2e; fi'
+    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run e2e:bs:test; fi'
     - npm run test:prod && npm run build
+before_script:
+    - 'wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip'
+    - 'unzip BrowserStackLocal-linux-x64.zip'
+    - './BrowserStackLocal --key "$BROWSERSTACK_KEY" --folder `pwd` &'
+    - 'sleep 5'
 after_success:
     - npm run travis-deploy-once "npm run report-coverage"
     - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm

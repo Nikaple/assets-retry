@@ -32,7 +32,6 @@ async function runTest() {
     }, Promise.resolve())
 
     await Promise.all([mobilePromise, pcPromise]);
-    require('fs').writeFileSync('result.json', JSON.stringify(testResults))
 }
 
 runTest()
