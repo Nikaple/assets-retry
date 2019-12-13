@@ -190,13 +190,15 @@ export const loadNextScript = function(
  * @returns
  */
 export const getCssRules = function(styleSheet: CSSStyleSheet) {
-    if (styleSheet.rules) {
+    try {
         return styleSheet.rules
+    } catch (_) {
+        try {
+            return styleSheet.cssRules
+        } catch (_) {
+            return null
+        }
     }
-    if (styleSheet.cssRules) {
-        return styleSheet.cssRules
-    }
-    return []
 }
 /**
  * test if current browser support CSSRuleList
@@ -205,12 +207,8 @@ export const getCssRules = function(styleSheet: CSSStyleSheet) {
  * @returns
  */
 export const supportRules = function(styleSheet: CSSStyleSheet) {
-    try {
-        const rules = getCssRules(styleSheet)
-        return rules.length > 0
-    } catch (_) {
-        return false
-    }
+    const rules = getCssRules(styleSheet)
+    return !!rules
 }
 
 /**

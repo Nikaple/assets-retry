@@ -119,12 +119,11 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         const targetStyleSheet = styleSheets.filter(styleSheet => {
             return styleSheet.href === target.href
         })[0]
-        // do not support css rules API
-        if (!targetStyleSheet.rules && !targetStyleSheet.cssRules) {
-            return;
+        const rules = getCssRules(targetStyleSheet)
+        if (rules === null) {
+            return
         }
-        const styleRules = arrayFrom(getCssRules(targetStyleSheet))
-        if (styleRules.length === 0) {
+        if (rules.length === 0) {
             errorHandler(event)
         }
     }
