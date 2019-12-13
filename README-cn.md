@@ -62,7 +62,7 @@ var assetsRetryStatistics = window.assetsRetry({
 
 当使用以上代码初始化完毕后，以下内容便获得了加载失败重试的能力：
 - [x] 所有在 `html` 中使用 `<script>` 标签引用的脚本
-- [x] 所有在 `html` 中使用 `<link>` 标签引用的样式
+- [x] 所有在 `html` 中使用 `<link>` 标签引用的样式 （跨域 CSS 需要正确[配置](#常见问题)）
 - [x] 所有在 `html` 中使用 `<img>` 标签引用的图片
 - [x] 所有使用 `document.createElement('script')` 加载的脚本（如 webpack 的[动态导入](https://webpack.docschina.org/guides/code-splitting/#%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5-dynamic-imports-)）
 - [x] 所有 `css` 中（包含同步与异步）使用的 `background-image` 图片

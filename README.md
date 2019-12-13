@@ -59,7 +59,7 @@ var assetsRetryStatistics = window.assetsRetry({
 ```
 When the initialization is finished, following content gains the power of retrying automatically.
 - [x] All `<script>` tag in html
-- [x] All `<link rel="stylesheet">` tag in html
+- [x] All `<link rel="stylesheet">` tag in html ([properly configured](#FAQ))
 - [x] All `<img>` tag in html
 - [x] All dynamic script element created with `document.createElement`, such as [dynamic import](https://webpack.js.org/guides/code-splitting/#dynamic-imports).
 - [x] All `background-image` in `css`
@@ -111,6 +111,7 @@ type Domain = string[] | { [x: string]: string; }
 ### FAQ
 
 1. Q: Stylesheets or background images are not retried from backup domain, why?
+
    A: Due to security policies of browsers, access to `cssRules` is not allowed for cross origin stylesheets by default. To fix this:
       1. Add `crossorigin="anonymous"` attribute on link element for the cross origin stylesheet。
       2. Make sure that [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) HTTP Header is correct.
