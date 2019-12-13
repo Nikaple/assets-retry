@@ -12,10 +12,6 @@ notifications:
     email: false
 addons:
     chrome: stable
-    browserstack:
-        forcelocal: true
-        username: nikaplezhou1
-        access_key: ${BROWSERSTACK_KEY}
 node_js:
     - '10'
 script:

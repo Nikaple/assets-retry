@@ -11,6 +11,7 @@ const processRules = function(
     name: UrlProperty,
     rule: CSSStyleRule,
     styleSheet: CSSStyleSheet,
+    styleRules: CSSStyleRule[],
     opts: InnerAssetsRetryOptions
 ) {
     const domainMap = opts.domain
@@ -40,7 +41,7 @@ const processRules = function(
         .join(',')
     const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList} !important; }`
     try {
-        styleSheet.insertRule(cssText, getCssRules(styleSheet).length)
+        styleSheet.insertRule(cssText, styleRules.length)
     } catch (_) {
         styleSheet.insertRule(cssText, 0)
     }
@@ -51,10 +52,14 @@ const processStyleSheets = (styleSheets: StyleSheet[], opts: InnerAssetsRetryOpt
     // TODO: iterating stylesheets may cause performance issues
     // maybe find other approaches?
     styleSheets.forEach((styleSheet: any) => {
-        const styleRules = arrayFrom(getCssRules(styleSheet)) as CSSStyleRule[]
+        const rules = getCssRules(styleSheet);
+        if (rules === null) {
+            return;
+        }
+        const styleRules = arrayFrom(rules) as CSSStyleRule[]
         styleRules.forEach(rule => {
             urlProperties.forEach(cssProperty => {
-                processRules(cssProperty, rule, styleSheet, opts)
+                processRules(cssProperty, rule, styleSheet, styleRules, opts)
             })
         })
 

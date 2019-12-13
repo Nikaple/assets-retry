@@ -181,6 +181,7 @@ const hookPrototype = function(target: any) {
         const originalFunc = target[key]
         target[key] = function(): any {
             const args = [].slice.call(arguments).map((item: any) => {
+                if (!item) return item;
                 return hasOwn.call(item, innerScriptProp) ? item[innerScriptProp] : item
             })
             return originalFunc.apply(this, args)
