@@ -29,7 +29,7 @@
     "e2e:bs:local": "BrowserStackLocal --key \"$BROWSERSTACK_KEY\" --folder `pwd`",
     "test:debug": "node --inspect-brk ./node_modules/.bin/jest --runInBand",
     "test:watch": "jest --coverage --watch",
-    "test:prod": "npm run lint && npm run test -- --no-cache",
+    "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
     "deploy-docs": "ts-node tools/gh-pages-publish",
     "report-coverage": "cat ./coverage/lcov.info | coveralls",
     "commit": "git-cz",
