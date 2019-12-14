@@ -38,7 +38,7 @@ Then, inject the library **at the beginning** of the page with proper webpack co
 
 #### Use inline script directly
 
-If you don't want to spend your time fiddling around with webpack configurations, you can inline the [minified file](https://github.com/Nikaple/assets-retry/dist/assets-retry.umd.js) with a script tag, and place it **at the beginning** of the page.
+If you don't want to spend your time fiddling around with webpack configurations, you can inline the [minified file](https://github.com/Nikaple/assets-retry/blob/master/dist/assets-retry.umd.js) with a script tag, and place it **at the beginning** of the page.
 
 ### Usage
 

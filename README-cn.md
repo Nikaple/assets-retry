@@ -38,7 +38,7 @@ $ npm install assets-retry --save
 然后通过 [webpack 配置](./examples/webpack) 内联到页面的 `head` 标签中，并置于**所有资源开始加载之前**。
 
 #### 直接通过 `script` 标签引用
-如果你懒得折腾 webpack 配置，可以将 [assets-retry.umd.js](https://github.com/Nikaple/assets-retry/dist/assets-retry.umd.js) 直接内联到 `<head>` 标签中，并置于**所有资源开始加载之前**。
+如果你懒得折腾 webpack 配置，可以将 [assets-retry.umd.js](https://github.com/Nikaple/assets-retry/blob/master/dist/assets-retry.umd.js) 直接内联到 `<head>` 标签中，并置于**所有资源开始加载之前**。
 
 ### 快速上手
 
