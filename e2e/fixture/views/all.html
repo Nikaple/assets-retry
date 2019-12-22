@@ -24,12 +24,21 @@
         console.log('[time]: ', new Date().getTime() - prev)
     </script>
     <script src="/e2e/fixture/scripts/test.js"></script>
+    <style>
+        #styleTag {
+            background-image: url('/e2e/not-exist/images/background-image-style-tag.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+    </style>
     <link type="text/css" rel="stylesheet" href="/e2e/not-exist/styles/sync.css">
     <title>Assets Retry</title>
 </head>
 <body>
     <h1>Assets Retry Test</h1>
+    <div id="result"></div>
     <img id="img" src="/e2e/not-exist/images/img-tag.png" height="60" />
+    <div id="styleTag" style="height: 60px"></div>
     <div id="cssSync" style="height: 60px"></div>
     <div id="cssAsync" style="height: 60px"></div>
     <script src="/e2e/not-exist/scripts/vendor.js"></script>

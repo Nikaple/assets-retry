@@ -1,4 +1,4 @@
-const capabilities = configuration.capabilities;
+const capabilities = configuration.capabilities
 const baseUri = `http://${capabilities['browserstack.user']}.browserstack.com`
 
 describe('BrowserStack', () => {
@@ -6,9 +6,9 @@ describe('BrowserStack', () => {
         const stat = await driver.executeScript('return window.stat')
         expect(stat).toEqual(target)
     }
-    
+
     beforeEach(() => {
-        jest.setTimeout(capabilities.timeout || 60000);
+        jest.setTimeout(capabilities.timeout || 60000)
     })
 
     const targetInfo = capabilities.realMobile
@@ -26,10 +26,18 @@ describe('BrowserStack', () => {
             const backgroundImageAsync = await driver.executeScript(
                 'return getComputedStyle(document.getElementById("cssAsync")).backgroundImage'
             )
+            const backgroundImageStyleTag = await driver.executeScript(
+                'return getComputedStyle(document.getElementById("styleTag")).backgroundImage'
+            )
             const asyncLoaded = await driver.executeScript(
                 'return window.loadedScripts.async === true'
             )
-            return /fixture/.test(backgroundImageSync) && /fixture/.test(backgroundImageAsync) && asyncLoaded
+            return (
+                /fixture/.test(backgroundImageSync) &&
+                /fixture/.test(backgroundImageAsync) &&
+                /fixture/.test(backgroundImageStyleTag) &&
+                asyncLoaded
+            )
         })
         // wait for browser to retry background image
         // background-image do not show in stats
