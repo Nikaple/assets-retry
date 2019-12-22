@@ -38,6 +38,19 @@ module.exports = function runTestCase({
         })
     })
 
+    it('should be able to retry style styles', async () => {
+        await driver.get(`${baseUri}/e2e/fixture/views/background-image-style-tag.html`)
+        // wait for browser to retry background image
+        await driver.wait(async () => {
+            const backgroundImage = await driver.executeScript(
+                'return getComputedStyle(document.getElementById("styleTag")).backgroundImage'
+            )
+            return /fixture/.test(backgroundImage)
+        })
+        // background-image do not show in stats
+        await expectStatToBe({})
+    })
+
     it('should be able to retry sync styles', async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/style-sync.html`)
         await waitForCssSelector('link[href*="fixture"]')
