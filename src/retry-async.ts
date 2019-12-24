@@ -78,13 +78,14 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                         // to the next script element to load
                         ;(self[innerScriptProp] as any).onerror = function(event: ErrorEvent) {
                             event.stopPropagation && event.stopPropagation()
+                            const callOriginalOnError = () => safeCall(self[innerOnerrorProp], self[innerScriptProp], event)
                             const src = self[innerScriptProp].src
                             const [currentDomain, currentCollector] = extractInfoFromUrl(
                                 src,
                                 domainMap
                             )
                             if (!currentDomain || !currentCollector) {
-                                return
+                                return callOriginalOnError()
                             }
                             const newSrc = stringReplace(
                                 src,
@@ -94,7 +95,7 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                             const userModifiedSrc = onRetry(newSrc, src, currentCollector)
                             // if onRetry returns null, do not retry this url
                             if (userModifiedSrc === null) {
-                                return
+                                return callOriginalOnError()
                             }
                             // eslint-disable-next-line
                             if (typeof userModifiedSrc !== 'string') {
@@ -103,7 +104,7 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                             if (currentCollector[retryTimesProp] <= maxRetryCount) {
                                 loadNextScript(self[innerScriptProp], userModifiedSrc)
                             } else {
-                                safeCall(self[innerOnerrorProp], self[innerScriptProp], event)
+                                callOriginalOnError()
                             }
                         }
                         return
@@ -113,11 +114,10 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                         self[innerScriptProp].onload = function(event: Event) {
                             const src = self[innerScriptProp].src
                             const [_, currentCollector] = extractInfoFromUrl(src, domainMap)
-                            if (!currentCollector) {
-                                return
-                            }
-                            if (currentCollector[failedProp].indexOf(src) === -1) {
-                                currentCollector[succeededProp].push(src)
+                            if (currentCollector) {
+                                if (currentCollector[failedProp].indexOf(src) === -1) {
+                                    currentCollector[succeededProp].push(src)
+                                }
                             }
                             if (newVal && !newVal._called) {
                                 newVal._called = true

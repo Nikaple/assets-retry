@@ -40,4 +40,17 @@ describe('initAsync', () => {
         expect(typeof hookedScript[innerScriptProp].onload).toBe('function')
         expect(typeof hookedScript.onload).toBe('function')
     })
+    it('should be able to call onload callback', (cb) => {
+        const $script = document.createElement('script') as any;
+        const stubOnload = jest.fn();
+        // no such port
+        $script.src = 'http://nikaple.com/test/fixture/blank.js'
+        // only test onload, because jsdom do not trigger onerror callbacks
+        $script.onload = () => {
+            stubOnload()
+            expect(stubOnload).toBeCalledTimes(1)
+            cb()
+        }
+        document.body.appendChild($script)
+    })
 })
