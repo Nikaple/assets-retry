@@ -1,6 +1,6 @@
 {
   "name": "assets-retry",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "",
   "keywords": [],
   "main": "dist/assets-retry.umd.js",
