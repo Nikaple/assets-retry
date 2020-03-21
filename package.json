@@ -90,7 +90,7 @@
     "lint-staged": "^10.0.3",
     "lodash.camelcase": "^4.3.0",
     "merge-deep": "^3.0.2",
-    "prettier": "^1.14.3",
+    "prettier": "^2.0.0",
     "prompt": "^1.0.0",
     "replace-in-file": "^5.0.2",
     "rimraf": "^3.0.0",
