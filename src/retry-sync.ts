@@ -1,6 +1,6 @@
 import { stringReplace, loadNextScript, loadNextLink, hashTarget, randomString, arrayFrom, getCssRules } from './util'
 import { InnerAssetsRetryOptions } from './assets-retry'
-import { extractInfoFromUrl } from './url'
+import { extractInfoFromUrl, prepareDomainMap } from './url'
 import {
     retryTimesProp,
     failedProp,
@@ -44,7 +44,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         const target = event.target || event.srcElement
-        const domainMap = opts.domain
+        const domainMap = prepareDomainMap(opts.domain)
         const originalUrl = getTargetUrl(target)
         if (!originalUrl) {
             // not one of script / link / image element
