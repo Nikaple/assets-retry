@@ -50,11 +50,19 @@ var assetsRetryStatistics = window.assetsRetry({
     // domain list, only resources in the domain list will be retried.
     domain: ['your.first.domain', 'your.second.domain/namespace'],
     // maximum retry count for each asset, default is 3
-    maxRetryCount: 3
+    maxRetryCount: 3,
     // onRetry hook is how you can customize retry logic with, default is x => x
     onRetry: function(currentUrl, originalUrl, statistics) {
         return currentUrl
-    }
+    },
+    // onSuccess executes when asset is successfully loaded, you can do some reporting here
+    onSuccess: function(currentUrl) {
+        console.log(currentUrl)
+    },
+    // onFail executes when asset is fail to load, you can do some reporting or give some tips here
+    onFail:function(currentUrl, isFinal) {
+        console.log(currentUrl, isFinal)
+    }, 
 })
 ```
 When the initialization is finished, following content gains the power of retrying automatically.
@@ -72,6 +80,8 @@ The `assetsRetry` function takes an `AssetsRetryOptions`, which is defined as fo
 interface AssetsRetryOptions {
     maxRetryCount: number;
     onRetry: RetryFunction;
+    onSuccess: SuccessFunction;
+    onFail: FailFunction;
     domain: Domain;
 }
 type RetryFunction = (
@@ -84,6 +94,13 @@ interface RetryStatistics {
     succeeded: string[]
     failed: string[]
 }
+type SuccessFunction = (
+    currentUrl: string | null
+) => string | null
+type FailFunction = (
+    currentUrl: string,
+    isFinal: boolean
+) => string | null
 type Domain = string[] | { [x: string]: string; }
 ```
 
@@ -101,6 +118,10 @@ type Domain = string[] | { [x: string]: string; }
     `onRetry` must return a `String` or `null`:
         - when null was returned, current retry will be terminated.
         - when string was returned, current retry url will be the return value.
+    `onSuccess` must return a `String` or `null`:
+        - return asset url that successfully loaded.
+    `onFail` must return a `String` or `null`:
+        - return asset url that fails to load and whether it was the last retry.
 
 ### Todo
 

@@ -22,6 +22,8 @@ const retryCache: { [x: string]: boolean } = {}
  */
 export default function initSync(opts: InnerAssetsRetryOptions) {
     const onRetry = opts.onRetry
+    const onSuccess = opts.onSuccess
+    const onFail = opts.onFail
     const getTargetUrl = function(target: EventTarget | null) {
         if (target instanceof HTMLScriptElement || target instanceof HTMLImageElement) {
             return target.src
@@ -56,7 +58,9 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         }
         currentCollector[retryTimesProp]++
         currentCollector[failedProp].push(originalUrl)
-        if (!domainMap[currentDomain] || currentCollector[retryTimesProp] > opts.maxRetryCount) {
+        const isFinalRetry = currentCollector[retryTimesProp] > opts.maxRetryCount
+        onFail(originalUrl, isFinalRetry)
+        if (!domainMap[currentDomain] || isFinalRetry) {
             // can not find a domain to switch
             // or failed too many times
             return
@@ -107,8 +111,25 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         }
         const target = event.target || event.srcElement;
         // only handle link element
-        if (!(target instanceof HTMLLinkElement)) {
-            return;
+        const isLink = target instanceof HTMLLinkElement;
+        const isScript = target instanceof HTMLScriptElement;
+        const isImg = target instanceof HTMLImageElement;
+        if (!isLink && !isScript && !isImg) {
+          return;
+        }
+        const originalUrl = getTargetUrl(target)
+        if (!originalUrl) {
+            // not one of script / link / image element
+            return
+        }
+        const domainMap = opts.domain
+        const [currentDomain, currentCollector] = extractInfoFromUrl(originalUrl, domainMap)
+        if (!currentCollector || !currentDomain) {
+          return
+        }
+        onSuccess(originalUrl)
+        if(!isLink){
+          return
         }
         const supportStyleSheets = doc.styleSheets
         // do not support styleSheets API

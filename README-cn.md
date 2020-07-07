@@ -52,11 +52,19 @@ var assetsRetryStatistics = window.assetsRetry({
     // 会自动使用 https://your.second.domain/namespace/js/1.js 重试
     domain: ['your.first.domain', 'your.second.domain/namespace'],
     // 可选，最大重试次数，默认 3 次
-    maxRetryCount: 3
+    maxRetryCount: 3,
     // 可选，通过该参数可自定义 URL 的转换方式
     onRetry: function(currentUrl, originalUrl, statistics) {
         return currentUrl
-    }
+    },
+    //可选，资源加载成功的回调
+    onSuccess: function(currentUrl) {
+        console.log(currentUrl)
+    },
+    //可选，资源加载失败的回调
+    onFail:function(currentUrl, isFinal) {
+        console.log(currentUrl, isFinal)
+    }, 
 })
 ```
 
@@ -75,6 +83,8 @@ var assetsRetryStatistics = window.assetsRetry({
 interface AssetsRetryOptions {
     maxRetryCount: number;
     onRetry: RetryFunction;
+    onSuccess: SuccessFunction;
+    onFail: FailFunction;
     domain: Domain;
 }
 type RetryFunction = (
@@ -87,6 +97,13 @@ interface RetryStatistics {
     succeeded: string[]
     failed: string[]
 }
+type SuccessFunction = (
+    currentUrl: string | null
+) => string | null
+type FailFunction = (
+    currentUrl: string,
+    isFinal: boolean
+) => string | null
 type Domain = string[] | { [x: string]: string; }
 ```
 
@@ -106,6 +123,11 @@ type Domain = string[] | { [x: string]: string; }
     该函数返回值必须为字符串或 `null` 对象。
         - 当返回 `null` 时，表示终止该次重试
         - 当返回字符串（url）时，会尝试从 url 中加载资源。
+- `onSuccess`: 在域名列表内的资源加载成功时执行，无论是否为重试：
+    * `currentUrl`: 返回加载成功的资源链接
+- `onFail`: 在域名列表内的资源加载失败时执行：
+    * `currentUrl`: 返回加载失败的资源链接
+    * `isFinal`: 是否为最后一次重试
 
 ### 工作原理
 
