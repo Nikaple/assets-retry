@@ -127,7 +127,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (!currentCollector || !currentDomain) {
           return
         }
-        onSuccess(originalUrl)
+        onSuccess(originalUrl, currentCollector[retryTimesProp])
         if(!isLink){
           return
         }

@@ -58,8 +58,8 @@ var assetsRetryStatistics = window.assetsRetry({
         return currentUrl
     },
     //可选，资源加载成功的回调
-    onSuccess: function(currentUrl) {
-        console.log(currentUrl)
+    onSuccess: function(currentUrl, retryTime) {
+        console.log(currentUrl, retryTime)
     },
     //可选，资源加载失败的回调
     onFail:function(currentUrl, isFinal) {
@@ -98,7 +98,8 @@ interface RetryStatistics {
     failed: string[]
 }
 type SuccessFunction = (
-    currentUrl: string | null
+    currentUrl: string | null,
+    retryTime: number
 ) => string | null
 type FailFunction = (
     currentUrl: string,
@@ -125,6 +126,7 @@ type Domain = string[] | { [x: string]: string; }
         - 当返回字符串（url）时，会尝试从 url 中加载资源。
 - `onSuccess`: 在域名列表内的资源加载成功时执行，无论是否为重试：
     * `currentUrl`: 返回加载成功的资源链接
+    * `retryTime`: 返回当前重试次数，0表示开始就加载成功，没有重试
 - `onFail`: 在域名列表内的资源加载失败时执行：
     * `currentUrl`: 返回加载失败的资源链接
     * `isFinal`: 是否为最后一次重试
