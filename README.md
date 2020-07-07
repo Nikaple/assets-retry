@@ -56,8 +56,8 @@ var assetsRetryStatistics = window.assetsRetry({
         return currentUrl
     },
     // onSuccess executes when asset is successfully loaded, you can do some reporting here
-    onSuccess: function(currentUrl) {
-        console.log(currentUrl)
+    onSuccess: function(currentUrl, retryTime) {
+        console.log(currentUrl, retryTime)
     },
     // onFail executes when asset is fail to load, you can do some reporting or give some tips here
     onFail:function(currentUrl, isFinal) {
@@ -95,7 +95,8 @@ interface RetryStatistics {
     failed: string[]
 }
 type SuccessFunction = (
-    currentUrl: string | null
+    currentUrl: string | null,
+    retryTime: number
 ) => string | null
 type FailFunction = (
     currentUrl: string,
@@ -118,10 +119,12 @@ type Domain = string[] | { [x: string]: string; }
     `onRetry` must return a `String` or `null`:
         - when null was returned, current retry will be terminated.
         - when string was returned, current retry url will be the return value.
-    `onSuccess` must return a `String` or `null`:
-        - return asset url that successfully loaded.
-    `onFail` must return a `String` or `null`:
-        - return asset url that fails to load and whether it was the last retry.
+- `onSuccess` must return a `String` or `null`:
+   * `currentUrl`: return asset url that successfully loaded.
+   * `retryTime`: return retry time, 0 means no load failed.
+- `onFail` must return a `String` or `null`:
+   * `currentUrl`: return asset url that fails to load
+   * `isFinal`: whether it was the last retry.
 
 ### Todo
 

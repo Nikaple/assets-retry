@@ -13,7 +13,8 @@ export type RetryFunction = (
 ) => string | null
 
 export type SuccessFunction = (
-    currentUrl: string | null
+    currentUrl: string | null,
+    retryTime: number
 ) => string | null
 
 export type FailFunction = (
