@@ -5,7 +5,6 @@ import {
     safeCall,
     stringReplace,
     toSlug,
-    setDefault,
     arrayFrom,
     collectPropertyNames,
     isFunctionProperty,
@@ -56,14 +55,6 @@ describe('toSlug', () => {
         expect(toSlug('fooBar')).toBe('foo-bar')
         expect(toSlug('Bar')).toBe('Bar')
         expect(toSlug('foo')).toBe('foo')
-    })
-})
-
-describe('setDefault', () => {
-    it('can set default value for object', () => {
-        const obj = {} as any
-        setDefault(obj, 'a', 'a')
-        expect(obj.a).toEqual('a')
     })
 })
 
