@@ -95,8 +95,8 @@ interface RetryStatistics {
     succeeded: string[]
     failed: string[]
 }
-type SuccessFunction = (currentUrl: string | null, retryTime: number) => string | null
-type FailFunction = (currentUrl: string, isFinal: boolean) => string | null
+type SuccessFunction = (currentUrl: string) => void
+type FailFunction = (currentUrl: string) => void
 type Domain = string[] | { [x: string]: string }
 ```
 
