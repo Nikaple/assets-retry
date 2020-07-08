@@ -1,19 +1,24 @@
-module.exports = function runTestCase({
-    baseUri,
-    driver,
-    until,
-    By
-}) {
+const { parse } = require('url')
+
+module.exports = function runTestCase({ baseUri, driver, until, By }) {
     const expectStatToBe = async target => {
         const stat = await driver.executeScript('return window.stat')
         expect(stat).toEqual(target)
     }
+    const expectSucceededToBe = async target => {
+        const succeeded = await driver.executeScript('return window.succeeded')
+        expect(succeeded.map(url => parse(url).path).sort()).toEqual(target.sort())
+    }
+    const expectFailedToBe = async target => {
+        const failed = await driver.executeScript('return window.failed')
+        expect(failed.map(url => parse(url).path).sort()).toEqual(target.sort())
+    }
     const waitForCssSelector = async selector => {
         return driver.wait(until.elementLocated(By.css(selector)), 10000)
     }
-    
+
     beforeEach(() => {
-        jest.setTimeout(60000);
+        jest.setTimeout(60000)
     })
 
     it('should be able to retry sync scripts', async () => {
@@ -36,6 +41,8 @@ module.exports = function runTestCase({
                 succeeded: []
             }
         })
+        await expectSucceededToBe(['/scripts/vendor.js'])
+        await expectFailedToBe(['/scripts/not-exist-vendor.js'])
     })
 
     it('should be able to retry style styles', async () => {
@@ -49,6 +56,8 @@ module.exports = function runTestCase({
         })
         // background-image do not show in stats
         await expectStatToBe({})
+        await expectSucceededToBe([])
+        await expectFailedToBe([])
     })
 
     it('should be able to retry sync styles', async () => {
@@ -74,6 +83,8 @@ module.exports = function runTestCase({
                 succeeded: []
             }
         })
+        await expectSucceededToBe(['/styles/sync.css'])
+        await expectFailedToBe(['/styles/not-exist-sync.css'])
     })
 
     it('should be able to retry img tags', async () => {
@@ -99,6 +110,8 @@ module.exports = function runTestCase({
                 succeeded: []
             }
         })
+        await expectSucceededToBe(['/images/img-tag.png'])
+        await expectFailedToBe(['/images/not-exist-img-tag.png'])
     })
 
     it('should be able to retry async scripts', async () => {
@@ -106,6 +119,7 @@ module.exports = function runTestCase({
         await waitForCssSelector('script[src*="fixture"]')
         const isAsyncLoaded = await driver.executeScript('return window.loadedScripts.async')
         expect(isAsyncLoaded).toBe(true)
+        await waitForCssSelector('#result')
         const result = await driver.findElement(By.id('result')).getText()
         const isCallbackOk = result === 'load'
         expect(isCallbackOk).toBe(true)
@@ -124,6 +138,8 @@ module.exports = function runTestCase({
                 succeeded: []
             }
         })
+        await expectSucceededToBe(['/scripts/async.js'])
+        await expectFailedToBe(['/scripts/not-exist-async.js'])
     })
 
     it('should be able to retry background images', async () => {
@@ -138,6 +154,8 @@ module.exports = function runTestCase({
         })
         // background-image do not show in stats
         await expectStatToBe({})
+        await expectSucceededToBe([])
+        await expectFailedToBe([])
     })
 
     it('should be able to retry async background images', async () => {
@@ -200,5 +218,15 @@ module.exports = function runTestCase({
                 succeeded: [`${baseUri}/e2e/fixture/styles/sync.css`]
             }
         })
+        await expectSucceededToBe([
+            '/styles/sync.css',
+            '/scripts/vendor.js',
+            '/images/img-tag.png',
+            '/scripts/sync.js',
+            '/styles/async.css',
+            '/scripts/async.js',
+            '/images/img-tag.png'
+        ])
+        await expectFailedToBe([])
     })
 }

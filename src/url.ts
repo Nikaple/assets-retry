@@ -67,15 +67,23 @@ export const extractInfoFromUrl = function(
     url: string,
     domainMap: DomainMap
 ): [string?, RetryStatistics?] {
-    const currentDomain = getCurrentDomain(url, domainMap)
-    if (!currentDomain) {
+    const [srcPath, currentDomain] = splitUrl(url, domainMap)
+    if (!srcPath) {
         return []
     }
-    const srcPath = getUrlPath(url, currentDomain)
     retryCollector[srcPath] = retryCollector[srcPath] || {
         [retryTimesProp]: 0,
         [failedProp]: [],
         [succeededProp]: []
     }
     return [currentDomain, retryCollector[srcPath]]
+}
+
+export const splitUrl = function(url: string, domainMap: DomainMap): [string, string] {
+    const currentDomain = getCurrentDomain(url, domainMap)
+    if (!currentDomain) {
+        return ['', '']
+    }
+    const srcPath = getUrlPath(url, currentDomain)
+    return [srcPath, currentDomain]
 }

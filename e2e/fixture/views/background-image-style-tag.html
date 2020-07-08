@@ -1,20 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
-    <script type="text/javascript">
-        var stat = window.assetsRetry({ domain: ['/e2e/not-exist', '/e2e/fixture'], maxRetryCount: 1 });
-    </script>
-    <style>
-        #styleTag {
-            background-image: url('/e2e/not-exist/images/background-image-style-tag.png');
-            background-size: contain;
-            background-repeat: no-repeat;
-        }
-    </style>
-</head>
-<body>
-    <div id="styleTag" style="height: 60px"></div>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+        <script type="text/javascript">
+            var succeeded = []
+            var failed = []
+            var stat = window.assetsRetry({
+                domain: ['/e2e/not-exist', '/e2e/fixture'],
+                maxRetryCount: 1,
+                onSuccess: function(url) {
+                    succeeded.push(url)
+                },
+                onFail: function(url) {
+                    failed.push(url)
+                }
+            })
+        </script>
+        <style>
+            #styleTag {
+                background-image: url('/e2e/not-exist/images/background-image-style-tag.png');
+                background-size: contain;
+                background-repeat: no-repeat;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="styleTag" style="height: 60px"></div>
+    </body>
 </html>

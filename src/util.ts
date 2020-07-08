@@ -41,7 +41,7 @@ export const safeCall = function<T, R>(
 export const stringReplace = function(current: string, oldStr: string, newStr: string) {
     const idx = current.indexOf(oldStr)
     if (idx === -1) {
-        return current;
+        return current
     }
     return current.substring(0, idx) + newStr + current.substring(idx + oldStr.length)
 }
@@ -54,17 +54,6 @@ export const stringReplace = function(current: string, oldStr: string, newStr: s
  */
 export const toSlug = function(str: string) {
     return str.replace(/([a-z])([A-Z])/g, (_, $1, $2) => `${$1}-${$2.toLowerCase()}`)
-}
-
-/**
- * set default value for object
- *
- * @param {any} obj object
- * @param {string} key key
- * @param {any} defaultValue default value
- */
-export const setDefault = function(obj: any, key: string, defaultValue: any) {
-    obj[key] = obj[key] || defaultValue
 }
 
 /**
@@ -89,12 +78,12 @@ export const collectPropertyNames = function(obj: any) {
         : function(x: any) {
               return x.__proto__
           }
-    let keys = Object.keys(obj);
+    let keys = Object.keys(obj)
     while (getProto(obj)) {
         keys = keys.concat(Object.keys(getProto(obj)))
         obj = getProto(obj)
     }
-    return keys.filter(key => key !== 'constructor');
+    return keys.filter(key => key !== 'constructor')
 }
 
 /**
@@ -117,14 +106,14 @@ export const isFunctionProperty = function(proto: any, key: string) {
 }
 
 /**
- * on some browsers, calling `document.write` when 
+ * on some browsers, calling `document.write` when
  * `document.readyState` is `loading` will clear the whole
  * page, which is not what we wanted.
  *
  * @returns
  */
 export const supportDocumentWrite = () => {
-    return !(/Edge|MSIE|rv:/i.test(navigator.userAgent))
+    return !/Edge|MSIE|rv:/i.test(navigator.userAgent)
 }
 
 /**
@@ -181,7 +170,6 @@ export const loadNextScript = function(
     }
     doc.getElementsByTagName('head')[0].appendChild($newScript)
 }
-
 
 /**
  * get rules from styleSheet
@@ -245,11 +233,28 @@ export const hashTarget = function(element: EventTarget | null) {
     if (!(element instanceof HTMLElement)) {
         return 'not_supported'
     }
-    const nodeName = element.nodeName;
-    const src = (element as any).src;
-    const href = (element as any).href;
-    const dataRetryId = element.getAttribute(retryIdentifier);
+    const nodeName = element.nodeName
+    const src = (element as any).src
+    const href = (element as any).href
+    const dataRetryId = element.getAttribute(retryIdentifier)
     return [nodeName, src, href, dataRetryId].join(';')
 }
 
-export const randomString = () => Math.random().toString(36).slice(2)
+export const randomString = () =>
+    Math.random()
+        .toString(36)
+        .slice(2)
+
+/**
+ * 获取 HTML 标签中包含的 URL 信息
+ * @param target
+ */
+export const getTargetUrl = function(target: EventTarget | null) {
+    if (target instanceof HTMLScriptElement || target instanceof HTMLImageElement) {
+        return target.src
+    }
+    if (target instanceof HTMLLinkElement) {
+        return target.href
+    }
+    return null
+}

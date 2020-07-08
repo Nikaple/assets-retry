@@ -9,7 +9,6 @@
 [![Dev Dependencies](https://david-dm.org/Nikaple/assets-retry/dev-status.svg)](https://david-dm.org/Nikaple/assets-retry?type=dev)
 [![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)](https://automate.browserstack.com/public-build/VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)
 
-
 当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 3 KB （gzipped）。
 
 ![Demo GIF](./public/assets-retry.gif)
@@ -18,14 +17,14 @@
 
 ## 目录
 
-- [安装](#安装)
-- [快速上手](#快速上手)
-- [配置](#配置)
-- [工作原理](#工作原理)
-    * [获取加载失败的静态资源](#获取加载失败的静态资源)
-    * [获取加载失败的异步脚本](#获取加载失败的异步脚本)
-    * [获取加载失败的静态资源](#获取加载失败的静态资源)
-- [常见问题](#常见问题)
+-   [安装](#安装)
+-   [快速上手](#快速上手)
+-   [配置](#配置)
+-   [工作原理](#工作原理)
+    -   [获取加载失败的静态资源](#获取加载失败的静态资源)
+    -   [获取加载失败的异步脚本](#获取加载失败的异步脚本)
+    -   [获取加载失败的静态资源](#获取加载失败的静态资源)
+-   [常见问题](#常见问题)
 
 ### 安装
 
@@ -38,6 +37,7 @@ $ npm install assets-retry --save
 然后通过 [webpack 配置](./examples/webpack) 内联到页面的 `head` 标签中，并置于**所有资源开始加载之前**。
 
 #### 直接通过 `script` 标签引用
+
 如果你懒得折腾 webpack 配置，可以将 [assets-retry.umd.js](https://github.com/Nikaple/assets-retry/blob/master/dist/assets-retry.umd.js) 直接内联到 `<head>` 标签中，并置于**所有资源开始加载之前**。
 
 ### 快速上手
@@ -57,35 +57,37 @@ var assetsRetryStatistics = window.assetsRetry({
     onRetry: function(currentUrl, originalUrl, statistics) {
         return currentUrl
     },
-    //可选，资源加载成功的回调
-    onSuccess: function(currentUrl, retryTime) {
-        console.log(currentUrl, retryTime)
+    // 对于给定资源，要么调用 onSuccess ，要么调用 onFail，标识其最终的加载状态
+    // 加载详细信息（成功的 URL、失败的 URL 列表、重试次数）
+    // 可以通过访问 assetsRetryStatistics[currentUrl] 来获取
+    onSuccess: function(currentUrl) {
+        console.log(currentUrl, assetsRetryStatistics[currentUrl])
     },
-    //可选，资源加载失败的回调
-    onFail:function(currentUrl, isFinal) {
-        console.log(currentUrl, isFinal)
-    }, 
+    onFail: function(currentUrl) {
+        console.log(currentUrl, assetsRetryStatistics[currentUrl])
+    }
 })
 ```
 
 当使用以上代码初始化完毕后，以下内容便获得了加载失败重试的能力：
-- [x] 所有在 `html` 中使用 `<script>` 标签引用的脚本
-- [x] 所有在 `html` 中使用 `<link>` 标签引用的样式 （跨域 CSS 需要正确[配置](#常见问题)）
-- [x] 所有在 `html` 中使用 `<img>` 标签引用的图片
-- [x] 所有使用 `document.createElement('script')` 加载的脚本（如 webpack 的[动态导入](https://webpack.docschina.org/guides/code-splitting/#%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5-dynamic-imports-)）
-- [x] 所有 `css` 中（包含同步与异步）使用的 `background-image` 图片
 
+-   [x] 所有在 `html` 中使用 `<script>` 标签引用的脚本
+-   [x] 所有在 `html` 中使用 `<link>` 标签引用的样式 （跨域 CSS 需要正确[配置](#常见问题)）
+-   [x] 所有在 `html` 中使用 `<img>` 标签引用的图片
+-   [x] 所有使用 `document.createElement('script')` 加载的脚本（如 webpack 的[动态导入](https://webpack.docschina.org/guides/code-splitting/#%E5%8A%A8%E6%80%81%E5%AF%BC%E5%85%A5-dynamic-imports-)）
+-   [x] 所有 `css` 中（包含同步与异步）使用的 `background-image` 图片
 
 ### 配置
 
 `assetsRetry` 接受一个配置对象 `AssetsRetryOptions` ，其类型签名为：
+
 ```ts
 interface AssetsRetryOptions {
-    maxRetryCount: number;
-    onRetry: RetryFunction;
-    onSuccess: SuccessFunction;
-    onFail: FailFunction;
-    domain: Domain;
+    maxRetryCount: number
+    onRetry: RetryFunction
+    onSuccess: SuccessFunction
+    onFail: FailFunction
+    domain: Domain
 }
 type RetryFunction = (
     currentUrl: string,
@@ -97,39 +99,32 @@ interface RetryStatistics {
     succeeded: string[]
     failed: string[]
 }
-type SuccessFunction = (
-    currentUrl: string | null,
-    retryTime: number
-) => string | null
-type FailFunction = (
-    currentUrl: string,
-    isFinal: boolean
-) => string | null
-type Domain = string[] | { [x: string]: string; }
+type SuccessFunction = (currentUrl: string) => void
+type FailFunction = (currentUrl: string) => void
+type Domain = string[] | { [x: string]: string }
 ```
 
 具体说明如下：
 
-- `domain`: 域名列表，可配置为数组或对象类型
-    * 数组类型：表示从域名列表中循环加载（1 -> 2 -> 3 -> ... -> n -> 1 -> ...），直到加载成功或超过限次
-    * 对象类型：如 `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` 表示在 `a.cdn` 失败的资源应从 `b.cdn` 重试，在 `c.cdn` 失败的资源应从 `d.cdn` 重试。
-- `maxRetryCount`: 每个资源的最大重试次数
-- `onRetry`: 在每次尝试重新加载资源时执行，该函数接收 3 个参数：
-    * `currentUrl`: 即将被选为重试地址的 `URL`
-    * `originalUrl`: 上一次加载失败的 `URL`
-    * `retryCollector`: 为当前资源的数据收集对象，如果资源为 CSS 中使用 `url` 引用的图片资源，**该参数可能为 `null`** 。当该参数不为 `null` 时，包含 3 个属性： 
-        - `retryTimes`: 表示当前为第 x 次重试（从 1 开始）
-        - `failed`: 已失败的资源列表（从同一域名加载多次时，可能重复）
-        - `succeeded`: 已成功的资源列表
-    该函数返回值必须为字符串或 `null` 对象。
+-   `domain`: 域名列表，可配置为数组或对象类型
+    -   数组类型：表示从域名列表中循环加载（1 -> 2 -> 3 -> ... -> n -> 1 -> ...），直到加载成功或超过限次
+    -   对象类型：如 `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` 表示在 `a.cdn` 失败的资源应从 `b.cdn` 重试，在 `c.cdn` 失败的资源应从 `d.cdn` 重试。
+-   `maxRetryCount`: 每个资源的最大重试次数
+-   `onRetry`: 在每次尝试重新加载资源时执行
+    - 该函数接收 3 个参数：
+        - `currentUrl`: 即将被选为重试地址的 `URL`
+        - `originalUrl`: 上一次加载失败的 `URL`
+        - `retryCollector`: 为当前资源的数据收集对象，如果资源为 CSS 中使用 `url` 引用的图片资源，**该参数为 `null`** 。当该参数不为 `null` 时，包含 3 个属性：
+            - `retryTimes`: 表示当前为第 x 次重试（从 1 开始）
+            - `failed`: 已失败的资源列表（从同一域名加载多次时，可能重复）
+            - `succeeded`: 已成功的资源列表
+    - 该函数的返回值必须为字符串或 `null` 对象。
         - 当返回 `null` 时，表示终止该次重试
         - 当返回字符串（url）时，会尝试从 url 中加载资源。
-- `onSuccess`: 在域名列表内的资源加载成功时执行，无论是否为重试：
-    * `currentUrl`: 返回加载成功的资源链接
-    * `retryTime`: 返回当前重试次数，0表示开始就加载成功，没有重试
-- `onFail`: 在域名列表内的资源加载失败时执行：
-    * `currentUrl`: 返回加载失败的资源链接
-    * `isFinal`: 是否为最后一次重试
+-   `onSuccess`: 在域名列表内的资源最终加载成功时执行：
+    -   `currentUrl`: 资源名，可通过该名称来找到当前资源的数据收集对象
+-   `onFail`: 在域名列表内的资源最终加载失败时执行：
+    -   `currentUrl`: 资源名，可通过该名称来找到当前资源的数据收集对象
 
 ### 工作原理
 
@@ -159,26 +154,26 @@ Assets-Retry 的实现主要分为三部分：
 ```javascript
 function requireEnsure(chunkId) {
     // 加载 chunk 的 promise
-    var promise = new Promise(function (resolve, reject) {
-        installedChunkData = installedChunks[chunkId] = [resolve, reject];
-    });
-    installedChunkData[2] = promise;
+    var promise = new Promise(function(resolve, reject) {
+        installedChunkData = installedChunks[chunkId] = [resolve, reject]
+    })
+    installedChunkData[2] = promise
     // start chunk loading
-    var script = document.createElement('script');
-    var onScriptComplete;
-    script.charset = 'utf-8';
-    script.timeout = 120;
-    script.src = jsonpScriptSrc(chunkId);
-    onScriptComplete = function (event) {
-        var chunk = installedChunks[chunkId];
+    var script = document.createElement('script')
+    var onScriptComplete
+    script.charset = 'utf-8'
+    script.timeout = 120
+    script.src = jsonpScriptSrc(chunkId)
+    onScriptComplete = function(event) {
+        var chunk = installedChunks[chunkId]
         if (chunk) {
             // chunk[1] 加载 script 的 reject 回调
-            chunk[1](new Error(/* ... */));
+            chunk[1](new Error(/* ... */))
         }
-    };
-    script.onerror = script.onload = onScriptComplete;
-    document.head.appendChild(script);
-};
+    }
+    script.onerror = script.onload = onScriptComplete
+    document.head.appendChild(script)
+}
 ```
 
 在 webpack 等模块加载器中使用动态导入时， webpack 便会用上面的 `requireEnsure` 方法来保证对应的动态 chunk 被加载。如果某个 chunk 加载失败，则会进入 `installChunkData[2]` 中储存 Promise 的 reject 流程，而 Promise 一旦进入 rejected 状态，就再也无法改变到其他状态了。也就是说， webpack 并不会给我们重试的机会。
@@ -198,25 +193,25 @@ function requireEnsure(chunkId) {
 
 ### Todo
 
-- [ ] 单元测试
-- [x] BrowserStack 兼容性测试
-- [ ] 更多 demo
+-   [x] 单元测试
+-   [x] BrowserStack 兼容性测试
+-   [x] 更多 demo
 
 ### 浏览器兼容性
 
-| <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> | <img src="./public/ios.png" height="48px" alt="ios logo"> |<img src="./public/android.svg" width="48px" height="48px" alt="android logo"> |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 47+ ✔ | 15+ ✔ | 32+ ✔ | 10+ ✔ | 34+ ✔ | 10+ ✔ | 10+ ✔ | 4.4+ ✔ | 
-
+| <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> | <img src="./public/ios.png" height="48px" alt="ios logo"> | <img src="./public/android.svg" width="48px" height="48px" alt="android logo"> |
+| :--------------------------------------------------------------------------: | :----------------------------------------------------------------------: | :----------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :-------------------------------------------------------: | :----------------------------------------------------------------------------: |
+|                                    47+ ✔                                     |                                  15+ ✔                                   |                                     32+ ✔                                      |                                        10+ ✔                                        |                                   34+ ✔                                    |                                    10+ ✔                                     |                           10+ ✔                           |                                     4.4+ ✔                                     |
 
 ### 常见问题
 
 1. Q: 为什么 CSS 或 CSS 中的背景图片无法从备用域名加载？
    A: 由于浏览器的安全策略，跨域的 CSS 默认无法动态获取 CSS 属性。修复方法：
-      1. 加载跨域 CSS 的 link 标签上添加 `crossorigin="anonymous"` 属性。
-      2. CDN 资源正确配置 [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) 头部
+    1. 加载跨域 CSS 的 link 标签上添加 `crossorigin="anonymous"` 属性。
+    2. CDN 资源正确配置 [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) 头部
 
 ### NPM scripts
+
 -   `npm t`: Run test suite
 -   `npm start`: Run `npm run build` in watch mode
 -   `npm run test:watch`: Run test suite in [interactive watch mode](http://facebook.github.io/jest/docs/cli.html#watch)

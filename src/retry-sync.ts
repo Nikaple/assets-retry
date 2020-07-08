@@ -1,13 +1,27 @@
-import { stringReplace, loadNextScript, loadNextLink, hashTarget, randomString, arrayFrom, getCssRules } from './util'
+import {
+    stringReplace,
+    loadNextScript,
+    loadNextLink,
+    hashTarget,
+    randomString,
+    arrayFrom,
+    getCssRules,
+    getTargetUrl
+} from './util'
 import { InnerAssetsRetryOptions } from './assets-retry'
-import { extractInfoFromUrl } from './url'
+import { extractInfoFromUrl, splitUrl } from './url'
 import {
     retryTimesProp,
     failedProp,
     hookedIdentifier,
     succeededProp,
     doc,
-    retryIdentifier
+    retryIdentifier,
+    onRetryProp,
+    onSuccessProp,
+    onFailProp,
+    domainProp,
+    maxRetryCountProp
 } from './constants'
 
 const retryCache: { [x: string]: boolean } = {}
@@ -21,18 +35,10 @@ const retryCache: { [x: string]: boolean } = {}
  * @param {InnerAssetsRetryOptions} opts
  */
 export default function initSync(opts: InnerAssetsRetryOptions) {
-    const onRetry = opts.onRetry
-    const onSuccess = opts.onSuccess
-    const onFail = opts.onFail
-    const getTargetUrl = function(target: EventTarget | null) {
-        if (target instanceof HTMLScriptElement || target instanceof HTMLImageElement) {
-            return target.src
-        }
-        if (target instanceof HTMLLinkElement) {
-            return target.href
-        }
-        return null
-    }
+    const onRetry = opts[onRetryProp]
+    const onSuccess = opts[onSuccessProp]
+    const onFail = opts[onFailProp]
+    const domainMap = opts[domainProp]
     /**
      * capture error on window
      * when js / css / image failed to load
@@ -46,7 +52,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         const target = event.target || event.srcElement
-        const domainMap = opts.domain
         const originalUrl = getTargetUrl(target)
         if (!originalUrl) {
             // not one of script / link / image element
@@ -58,8 +63,11 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         }
         currentCollector[retryTimesProp]++
         currentCollector[failedProp].push(originalUrl)
-        const isFinalRetry = currentCollector[retryTimesProp] > opts.maxRetryCount
-        onFail(originalUrl, isFinalRetry)
+        const isFinalRetry = currentCollector[retryTimesProp] > opts[maxRetryCountProp]
+        if (isFinalRetry) {
+            const [srcPath] = splitUrl(originalUrl, domainMap)
+            onFail(srcPath)
+        }
         if (!domainMap[currentDomain] || isFinalRetry) {
             // can not find a domain to switch
             // or failed too many times
@@ -77,15 +85,19 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             throw new Error('a string should be returned in `onRetry` function')
         }
         // cache retried elements
-        const elementId = hashTarget(target);
+        const elementId = hashTarget(target)
         if (retryCache[elementId]) {
-            return;
+            return
         }
-        retryCache[elementId] = true;
+        retryCache[elementId] = true
         const onloadCallback = () => {
             currentCollector[succeededProp].push(userModifiedUrl)
         }
-        if (target instanceof HTMLScriptElement && !target.getAttribute(hookedIdentifier) && target.src) {
+        if (
+            target instanceof HTMLScriptElement &&
+            !target.getAttribute(hookedIdentifier) &&
+            target.src
+        ) {
             loadNextScript(target, userModifiedUrl, onloadCallback)
             return
         }
@@ -107,38 +119,30 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
      */
     const loadHandler = function(event: Event) {
         if (!event) {
-            return;
+            return
         }
-        const target = event.target || event.srcElement;
-        // only handle link element
-        const isLink = target instanceof HTMLLinkElement;
-        const isScript = target instanceof HTMLScriptElement;
-        const isImg = target instanceof HTMLImageElement;
-        if (!isLink && !isScript && !isImg) {
-          return;
-        }
+        const target = event.target || event.srcElement
         const originalUrl = getTargetUrl(target)
         if (!originalUrl) {
             // not one of script / link / image element
             return
         }
-        const domainMap = opts.domain
-        const [currentDomain, currentCollector] = extractInfoFromUrl(originalUrl, domainMap)
-        if (!currentCollector || !currentDomain) {
-          return
+        if ((target as HTMLElement).getAttribute(retryIdentifier)) {
+            const [srcPath] = splitUrl(originalUrl, domainMap)
+            onSuccess(srcPath)
         }
-        onSuccess(originalUrl, currentCollector[retryTimesProp])
-        if(!isLink){
-          return
+        // only handle link element
+        if (!(target instanceof HTMLLinkElement)) {
+            return
         }
         const supportStyleSheets = doc.styleSheets
         // do not support styleSheets API
         if (!supportStyleSheets) {
-            return;
+            return
         }
-        const styleSheets = arrayFrom(doc.styleSheets) as CSSStyleSheet[]
+        const styleSheets = arrayFrom(doc.styleSheets) as any[]
         const targetStyleSheet = styleSheets.filter(styleSheet => {
-            return styleSheet.href === target.href
+            return styleSheet.href === (target as any).href
         })[0]
         const rules = getCssRules(targetStyleSheet)
         if (rules === null) {

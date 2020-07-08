@@ -3,10 +3,7 @@ module.exports = {
     setupFilesAfterEnv: ["jest-environment-selenium/dist/setup.js"],
     testEnvironmentOptions: {
         capabilities: {
-            browserName: 'chrome',
-            'goog:chromeOptions': {
-                args: ['--no-sandbox', '--headless', '--disable-gpu']
-            },
+            browserName: 'firefox'
         }
     },
     moduleFileExtensions: ['ts', 'tsx', 'js'],

@@ -1,23 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
-    <script type="text/javascript">
-        var stat = window.assetsRetry({ domain: ['/e2e/not-exist', '/e2e/fixture'], maxRetryCount: 1 });
-    </script>
-</head>
-<body>
-    <div id="cssAsync" style="height: 60px"></div>
-    <script type="text/javascript">
-        var loadCss = function(href) {
-            var $link = document.createElement('link')
-            $link.href = href;
-            $link.rel = $link.rev = 'stylesheet';
-            $link.type = 'text/css';
-            document.getElementsByTagName('head')[0].appendChild($link);
-        }
-        loadCss('/e2e/fixture/styles/async.css')
-    </script>
-</body>
+    <head>
+        <meta charset="UTF-8" />
+        <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+        <script type="text/javascript">
+            var succeeded = []
+            var failed = []
+            var stat = window.assetsRetry({
+                domain: ['/e2e/not-exist', '/e2e/fixture'],
+                maxRetryCount: 1,
+                onSuccess: function(url) {
+                    succeeded.push(url)
+                },
+                onFail: function(url) {
+                    failed.push(url)
+                }
+            })
+        </script>
+    </head>
+    <body>
+        <div id="cssAsync" style="height: 60px"></div>
+        <script type="text/javascript">
+            var loadCss = function(href) {
+                var $link = document.createElement('link')
+                $link.href = href
+                $link.rel = $link.rev = 'stylesheet'
+                $link.type = 'text/css'
+                document.getElementsByTagName('head')[0].appendChild($link)
+            }
+            loadCss('/e2e/fixture/styles/async.css')
+        </script>
+    </body>
 </html>

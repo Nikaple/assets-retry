@@ -12,19 +12,20 @@ English | [简体中文](./README-cn.md)
 A tiny non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, only 3 KB gzipped, even works with dynamic import!
 
 ![Demo GIF](./public/assets-retry.gif)
+
 ### [Demo URL](https://nikaple.com/assets-retry/vue/)
 
 ## Table of Contents
 
-- [Installation](#installation)
-    + [Install with npm](#install-with-npm)
-    + [Use inline script directly](#use-inline-script-directly)
-- [Usage](#usage)
-- [Config](#config)
-- [Todo](#todo)
-- [FAQ](#FAQ)
-- [Browser Support](#browser-support)
-- [Acknowledgement](#acknowledgement)
+-   [Installation](#installation)
+    -   [Install with npm](#install-with-npm)
+    -   [Use inline script directly](#use-inline-script-directly)
+-   [Usage](#usage)
+-   [Config](#config)
+-   [Todo](#todo)
+-   [FAQ](#FAQ)
+-   [Browser Support](#browser-support)
+-   [Acknowledgement](#acknowledgement)
 
 ### Installation
 
@@ -55,34 +56,37 @@ var assetsRetryStatistics = window.assetsRetry({
     onRetry: function(currentUrl, originalUrl, statistics) {
         return currentUrl
     },
-    // onSuccess executes when asset is successfully loaded, you can do some reporting here
-    onSuccess: function(currentUrl, retryTime) {
-        console.log(currentUrl, retryTime)
+    // for a given resource (except background-images in css),
+    // either onSuccess or onFail will be eventually called to
+    // indicate whether the resource has been successfully loaded
+    onSuccess: function(currentUrl) {
+        console.log(currentUrl, assetsRetryStatistics[currentUrl])
     },
-    // onFail executes when asset is fail to load, you can do some reporting or give some tips here
-    onFail:function(currentUrl, isFinal) {
-        console.log(currentUrl, isFinal)
-    }, 
+    onFail: function(currentUrl) {
+        console.log(currentUrl, assetsRetryStatistics[currentUrl])
+    }
 })
 ```
-When the initialization is finished, following content gains the power of retrying automatically.
-- [x] All `<script>` tag in html
-- [x] All `<link rel="stylesheet">` tag in html ([properly configured](#FAQ))
-- [x] All `<img>` tag in html
-- [x] All dynamic script element created with `document.createElement`, such as [dynamic import](https://webpack.js.org/guides/code-splitting/#dynamic-imports).
-- [x] All `background-image` in `css`
 
+When the initialization is finished, following content gains the power of retrying automatically.
+
+-   [x] All `<script>` tag in html
+-   [x] All `<link rel="stylesheet">` tag in html ([properly configured](#FAQ))
+-   [x] All `<img>` tag in html
+-   [x] All dynamic script element created with `document.createElement`, such as [dynamic import](https://webpack.js.org/guides/code-splitting/#dynamic-imports).
+-   [x] All `background-image` in `css`
 
 ### Config
 
 The `assetsRetry` function takes an `AssetsRetryOptions`, which is defined as follows:
+
 ```ts
 interface AssetsRetryOptions {
-    maxRetryCount: number;
-    onRetry: RetryFunction;
-    onSuccess: SuccessFunction;
-    onFail: FailFunction;
-    domain: Domain;
+    maxRetryCount: number
+    onRetry: RetryFunction
+    onSuccess: SuccessFunction
+    onFail: FailFunction
+    domain: Domain
 }
 type RetryFunction = (
     currentUrl: string,
@@ -94,59 +98,54 @@ interface RetryStatistics {
     succeeded: string[]
     failed: string[]
 }
-type SuccessFunction = (
-    currentUrl: string | null,
-    retryTime: number
-) => string | null
-type FailFunction = (
-    currentUrl: string,
-    isFinal: boolean
-) => string | null
-type Domain = string[] | { [x: string]: string; }
+type SuccessFunction = (currentUrl: string | null, retryTime: number) => string | null
+type FailFunction = (currentUrl: string, isFinal: boolean) => string | null
+type Domain = string[] | { [x: string]: string }
 ```
 
-- `domain`: domain list, can be array or object type
-    * array type: assets will be retried from each domain in sequence, until it's loaded successfully or exceed maximum retry times.
-    * object type: `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` means failed assets from `a.cdn` should be retried from `b.cdn`, failed assets from `c.cdn` should be retried from `d.cdn`
-- `maxRetryCount`: maximum retry count for each asset, default is 3
-- `onRetry`: hook function which was called before trying to load assets, it takes 3 parameters:
-    * `currentUrl`: next url to try
-    * `originalUrl`: last failed url
-    * `retryCollector`: information collector for current asset, if the asset was from `url()` function defined in your stylesheets, **it will be null**. When it's not `null`, it's an object with following properties:
-        - `retryTimes`: current retry times (starts from 1)
-        - `failed`: failed assets list(may be duplicated when retrying from the same domain multiple times)
-        - `succeeded`: succeeded assets list
-    `onRetry` must return a `String` or `null`:
+-   `domain`: domain list, can be array or object type
+    -   array type: assets will be retried from each domain in sequence, until it's loaded successfully or exceed maximum retry times.
+    -   object type: `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` means failed assets from `a.cdn` should be retried from `b.cdn`, failed assets from `c.cdn` should be retried from `d.cdn`
+-   `maxRetryCount`: maximum retry count for each asset, default is 3
+-   `onRetry`: hook function which was called before trying to load any assets
+    - the function takes 3 parameters:
+        - `currentUrl`: next url to try
+        - `originalUrl`: last failed url
+        - `retryCollector`: information collector for current asset, if the asset was from `url()` function defined in your stylesheets, **it will be null**. When it's not `null`, it's an object with following properties:
+            - `retryTimes`: current retry times (starts from 1) 
+            - `failed`: failed assets list(may be duplicated when retrying from the same domain multiple times)
+            - `succeeded`: succeeded assets list
+    - the function must return a `String` or `null`:
         - when null was returned, current retry will be terminated.
         - when string was returned, current retry url will be the return value.
-- `onSuccess` must return a `String` or `null`:
-   * `currentUrl`: return asset url that successfully loaded.
-   * `retryTime`: return retry time, 0 means no load failed.
-- `onFail` must return a `String` or `null`:
-   * `currentUrl`: return asset url that fails to load
-   * `isFinal`: whether it was the last retry.
+-   `onSuccess`: hook function which was called when asset has loaded
+    -   `currentUrl`: return the asset name which you can use to get statistics from information collector
+-   `onFail`: hook function which was called when asset failed to load
+    -   `currentUrl`: return the asset name which you can use to get statistics from information collector
 
 ### Todo
 
-- [ ] Unit tests
-- [x] BrowserStack compatibility test
-- [ ] more demo
+-   [x] Unit tests
+-   [x] BrowserStack compatibility test
+-   [x] more demo
 
 ### FAQ
 
 1. Q: Stylesheets or background images are not retried from backup domain, why?
 
-   A: Due to security policies of browsers, access to `cssRules` is not allowed for cross origin stylesheets by default. To fix this:
-      1. Add `crossorigin="anonymous"` attribute on link element for the cross origin stylesheet。
-      2. Make sure that [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) HTTP Header is correct.
+    A: Due to security policies of browsers, access to `cssRules` is not allowed for cross origin stylesheets by default. To fix this:
+
+    1. Add `crossorigin="anonymous"` attribute on link element for the cross origin stylesheet。
+    2. Make sure that [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) HTTP Header is correct.
 
 ### Browser Support
 
-| <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> | <img src="./public/ios.png" height="48px" alt="ios logo"> |<img src="./public/android.svg" width="48px" height="48px" alt="android logo"> |
-|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| 47+ ✔ | 15+ ✔ | 32+ ✔ | 10+ ✔ | 34+ ✔ | 10+ ✔ | 10+ ✔ | 4.4+ ✔ | 
+| <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> | <img src="./public/ios.png" height="48px" alt="ios logo"> | <img src="./public/android.svg" width="48px" height="48px" alt="android logo"> |
+| :--------------------------------------------------------------------------: | :----------------------------------------------------------------------: | :----------------------------------------------------------------------------: | :---------------------------------------------------------------------------------: | :------------------------------------------------------------------------: | :--------------------------------------------------------------------------: | :-------------------------------------------------------: | :----------------------------------------------------------------------------: |
+|                                    47+ ✔                                     |                                  15+ ✔                                   |                                     32+ ✔                                      |                                        10+ ✔                                        |                                   34+ ✔                                    |                                    10+ ✔                                     |                           10+ ✔                           |                                     4.4+ ✔                                     |
 
 ### NPM scripts
+
 -   `npm t`: Run test suite
 -   `npm start`: Run `npm run build` in watch mode
 -   `npm run test:watch`: Run test suite in [interactive watch mode](http://facebook.github.io/jest/docs/cli.html#watch)

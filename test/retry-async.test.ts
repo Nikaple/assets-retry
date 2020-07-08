@@ -1,5 +1,6 @@
 import initAsync from '../src/retry-async'
 import { innerScriptProp, innerOnloadProp, innerOnerrorProp } from '../src/constants'
+import { noop } from '../src/util'
 const originalCreateElement = document.createElement
 
 describe('initAsync', () => {
@@ -7,7 +8,13 @@ describe('initAsync', () => {
         document.body.innerHTML = '';
     })
     it('should not break toString functions on DOM methods', () => {
-        initAsync({ domain: { localhost: 'localhost' }, maxRetryCount: 1, onRetry: x => x })
+        initAsync({
+            domain: { localhost: 'localhost' },
+            maxRetryCount: 1,
+            onRetry: x => x,
+            onSuccess: noop,
+            onFail: noop
+        })
         expect(document.createElement.toString()).toMatch(/native code/)
         expect(document.body.appendChild.toString()).toMatch(/native code/)
         expect(document.body.append.toString()).toMatch(/native code/)

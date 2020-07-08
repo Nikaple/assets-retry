@@ -1,5 +1,5 @@
 import { arrayFrom, stringReplace, toSlug, supportRules, getCssRules } from './util'
-import { doc } from './constants'
+import { doc, domainProp, onRetryProp } from './constants'
 import { getCurrentDomain, DomainMap } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
 
@@ -16,8 +16,8 @@ const processRules = function(
     styleRules: CSSStyleRule[],
     opts: InnerAssetsRetryOptions
 ) {
-    const domainMap = opts.domain
-    const onRetry = opts.onRetry
+    const domainMap = opts[domainProp]
+    const onRetry = opts[onRetryProp]
     const targetRule = rule.style && rule.style[name]
     if (!targetRule) {
         return
@@ -51,12 +51,10 @@ const processRules = function(
 
 const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetryOptions) => {
     const urlProperties: UrlProperty[] = ['backgroundImage', 'borderImage', 'listStyleImage']
-    // TODO: iterating stylesheets may cause performance issues
-    // maybe find other approaches?
     styleSheets.forEach((styleSheet: CSSStyleSheet) => {
-        const rules = getCssRules(styleSheet);
+        const rules = getCssRules(styleSheet)
         if (rules === null) {
-            return;
+            return
         }
         const styleRules = arrayFrom(rules) as CSSStyleRule[]
         styleRules.forEach(rule => {
@@ -77,29 +75,28 @@ const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetry
 const getStyleSheetsToBeHandled = function(styleSheets: StyleSheetList, domainMap: DomainMap) {
     return (arrayFrom(styleSheets) as CSSStyleSheet[]).filter(styleSheet => {
         if (!supportRules(styleSheet)) {
-            return false;
+            return false
         }
         // <style /> tags
         if (!styleSheet.href) {
-            const ownerNode = styleSheet.ownerNode;
+            const ownerNode = styleSheet.ownerNode
             if (ownerNode instanceof HTMLStyleElement && handledStyleTags.indexOf(ownerNode) > -1) {
-                return false;
+                return false
             }
-            return true;
+            return true
         }
         if (handledStylesheets[styleSheet.href]) {
-            return false;
+            return false
         }
-        const currentDomain = getCurrentDomain(styleSheet.href, domainMap);
+        const currentDomain = getCurrentDomain(styleSheet.href, domainMap)
         return !!currentDomain
     })
-
 }
 
 export default function initCss(opts: InnerAssetsRetryOptions) {
     // detect is support styleSheets
     const supportStyleSheets = doc.styleSheets
-    const domainMap = opts.domain
+    const domainMap = opts[domainProp]
     if (!supportStyleSheets) return false
     setInterval(() => {
         const newStyleSheets = getStyleSheetsToBeHandled(doc.styleSheets, domainMap)
