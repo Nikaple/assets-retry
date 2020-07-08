@@ -132,7 +132,7 @@ type Domain = string[] | { [x: string]: string }
 
     A: Due to security policies of browsers, access to `cssRules` is not allowed for cross origin stylesheets by default. To fix this:
 
-    1. Add `crossorigin="anonymous"` attribute on link element for the cross origin stylesheet。
+    1. Add `crossorigin="anonymous"` attribute on link element for cross origin stylesheets.
     2. Make sure that [Access-Control-Allow-Origin](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Access-Control-Allow-Origin) HTTP Header is correct.
 
 ### Browser Support
