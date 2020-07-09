@@ -1,5 +1,5 @@
 import { arrayFrom, stringReplace, toSlug, supportRules, getCssRules } from './util'
-import { doc, domainProp, onRetryProp } from './constants'
+import { doc, domainProp, onRetryProp, StyleElementCtor } from './constants'
 import { getCurrentDomain, DomainMap } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
 
@@ -66,7 +66,7 @@ const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetry
         if (styleSheet.href) {
             handledStylesheets[styleSheet.href] = true
         }
-        if (styleSheet.ownerNode instanceof HTMLStyleElement) {
+        if (styleSheet.ownerNode instanceof StyleElementCtor) {
             handledStyleTags.push(styleSheet.ownerNode)
         }
     })
@@ -80,7 +80,7 @@ const getStyleSheetsToBeHandled = function(styleSheets: StyleSheetList, domainMa
         // <style /> tags
         if (!styleSheet.href) {
             const ownerNode = styleSheet.ownerNode
-            if (ownerNode instanceof HTMLStyleElement && handledStyleTags.indexOf(ownerNode) > -1) {
+            if (ownerNode instanceof StyleElementCtor && handledStyleTags.indexOf(ownerNode) > -1) {
                 return false
             }
             return true

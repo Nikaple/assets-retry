@@ -21,7 +21,10 @@ import {
     onSuccessProp,
     onFailProp,
     domainProp,
-    maxRetryCountProp
+    maxRetryCountProp,
+    ScriptElementCtor,
+    LinkElementCtor,
+    ImageElementCtor
 } from './constants'
 
 const retryCache: { [x: string]: boolean } = {}
@@ -94,18 +97,18 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             currentCollector[succeededProp].push(userModifiedUrl)
         }
         if (
-            target instanceof HTMLScriptElement &&
+            target instanceof ScriptElementCtor &&
             !target.getAttribute(hookedIdentifier) &&
             target.src
         ) {
             loadNextScript(target, userModifiedUrl, onloadCallback)
             return
         }
-        if (target instanceof HTMLLinkElement && target.href) {
+        if (target instanceof LinkElementCtor && target.href) {
             loadNextLink(target, userModifiedUrl, onloadCallback)
             return
         }
-        if (target instanceof HTMLImageElement && target.src) {
+        if (target instanceof ImageElementCtor && target.src) {
             target.setAttribute(retryIdentifier, randomString())
             target.src = userModifiedUrl
             target.onload = onloadCallback
@@ -132,7 +135,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             onSuccess(srcPath)
         }
         // only handle link element
-        if (!(target instanceof HTMLLinkElement)) {
+        if (!(target instanceof LinkElementCtor)) {
             return
         }
         const supportStyleSheets = doc.styleSheets

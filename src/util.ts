@@ -1,4 +1,4 @@
-import { scriptTag, linkTag, doc, retryIdentifier } from './constants'
+import { scriptTag, linkTag, doc, retryIdentifier, ScriptElementCtor, LinkElementCtor, ImageElementCtor, ElementCtor } from './constants'
 
 export const identity = function<T>(x: T): T {
     return x
@@ -150,7 +150,7 @@ export const loadNextScript = function(
     // type, noModule, charset, async, defer,
     // crossOrigin, text, referrerPolicy, event,
     // htmlFor, integrity (chrome)
-    Object.keys(HTMLScriptElement.prototype).forEach(function(key: string) {
+    Object.keys(ScriptElementCtor.prototype).forEach(function(key: string) {
         if (key !== 'src' && ($script as any)[key] && typeof ($script as any)[key] !== 'object') {
             try {
                 ;($newScript as any)[key] = ($script as any)[key]
@@ -211,7 +211,7 @@ export const loadNextLink = function($link: HTMLLinkElement, newHref: string, on
     // disabled, href, crossOrigin, rel, relList, media, hreflang,
     // type, as, referrerPolicy, sizes, imageSrcset, imageSizes,
     // charset, rev, target, sheet, integrity, import (chrome)
-    Object.keys(HTMLLinkElement.prototype).forEach(function(key: string) {
+    Object.keys(LinkElementCtor.prototype).forEach(function(key: string) {
         if (key !== 'href' && ($link as any)[key] && typeof ($link as any)[key] !== 'object') {
             try {
                 ;($newLink as any)[key] = ($link as any)[key]
@@ -230,7 +230,7 @@ export const hashTarget = function(element: EventTarget | null) {
     if (!element) {
         return 'null'
     }
-    if (!(element instanceof HTMLElement)) {
+    if (!(element instanceof ElementCtor)) {
         return 'not_supported'
     }
     const nodeName = element.nodeName
@@ -250,10 +250,10 @@ export const randomString = () =>
  * @param target
  */
 export const getTargetUrl = function(target: EventTarget | null) {
-    if (target instanceof HTMLScriptElement || target instanceof HTMLImageElement) {
+    if (target instanceof ScriptElementCtor || target instanceof ImageElementCtor) {
         return target.src
     }
-    if (target instanceof HTMLLinkElement) {
+    if (target instanceof LinkElementCtor) {
         return target.href
     }
     return null

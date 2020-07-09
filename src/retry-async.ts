@@ -21,6 +21,7 @@ import {
     scriptTag,
     hookedIdentifier,
     doc,
+    ScriptElementCtor,
 } from './constants'
 import { retryCollector } from './collector'
 import { prepareDomainMap, extractInfoFromUrl } from './url'
@@ -38,7 +39,7 @@ export interface HookedScript {
 // a script request failed.
 let scriptProperties: string[];
 try {
-    scriptProperties = collectPropertyNames(HTMLScriptElement.prototype)
+    scriptProperties = collectPropertyNames(ScriptElementCtor.prototype)
 } catch (_) { /* noop */ }
 
 /**
@@ -56,7 +57,7 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
     const domainMap = prepareDomainMap(opts[domainProp])
     const onRetry = opts[onRetryProp]
     return scriptProperties.reduce(function(descriptor, key) {
-        const isFn = isFunctionProperty(HTMLScriptElement.prototype, key)
+        const isFn = isFunctionProperty(ScriptElementCtor.prototype, key)
         // for function properties,
         // do not assign getters/setters
         if (isFn) {
