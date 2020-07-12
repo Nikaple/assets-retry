@@ -188,12 +188,6 @@ function requireEnsure(chunkId) {
 
 该部分通过 [CSSStyleSheet](https://developer.mozilla.org/zh-CN/docs/Web/API/CSSStyleSheet) 动态改变页面样式实现，当遇到图片类属性（如 `background-image`, `border-image`, `list-style-image`）时，自动添加一条包含备用域名的规则到网页样式中，浏览器便会自动发起重试，直到任一请求成功或均以失败告终。
 
-### Todo
-
--   [x] 单元测试
--   [x] BrowserStack 兼容性测试
--   [x] 更多 demo
-
 ### 浏览器兼容性
 
 | <img src="./public/chrome.png" width="48px" height="48px" alt="Chrome logo"> | <img src="./public/edge.png" width="48px" height="48px" alt="Edge logo"> | <img src="./public/firefox.png" width="48px" height="48px" alt="Firefox logo"> | <img src="./public/ie.png" width="48px" height="48px" alt="Internet Explorer logo"> | <img src="./public/opera.png" width="48px" height="48px" alt="Opera logo"> | <img src="./public/safari.png" width="48px" height="48px" alt="Safari logo"> | <img src="./public/ios.png" height="48px" alt="ios logo"> | <img src="./public/android.svg" width="48px" height="48px" alt="android logo"> |

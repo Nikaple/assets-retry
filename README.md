@@ -19,7 +19,6 @@ A tiny non-intrusive library to retry your assets (scripts, stylesheets, images)
     -   [Use inline script directly](#use-inline-script-directly)
 -   [Usage](#usage)
 -   [Config](#config)
--   [Todo](#todo)
 -   [FAQ](#FAQ)
 -   [Browser Support](#browser-support)
 -   [Acknowledgement](#acknowledgement)
@@ -119,12 +118,6 @@ type Domain = string[] | { [x: string]: string }
     -   `currentUrl`: return the asset name which you can use to get statistics from information collector
 -   `onFail`: hook function which was called when asset failed to load
     -   `currentUrl`: return the asset name which you can use to get statistics from information collector
-
-### Todo
-
--   [x] Unit tests
--   [x] BrowserStack compatibility test
--   [x] more demo
 
 ### FAQ
 
