@@ -125,12 +125,17 @@ export const supportDocumentWrite = () => {
 export const loadNextScript = function(
     $script: HTMLScriptElement,
     newSrc: string,
-    onload: () => void = noop
+    onload: () => void = noop,
+    isAsync = false
 ) {
     // when dealing with failed script tags in html,
     // use `document.write` to ensure the correctness
     // of loading order
-    if (doc.readyState === 'loading' && supportDocumentWrite()) {
+    const isAsyncScript = isAsync || $script.defer || $script.async;
+    // only use document.write for non-async scripts,
+    // which includes script tag created by document.createElement
+    // or with `defer` or `async` attribute
+    if (doc.readyState === 'loading' && supportDocumentWrite() && !isAsyncScript) {
         const retryId = randomString()
         const newHtml = $script.outerHTML
             // delete previous retry id
