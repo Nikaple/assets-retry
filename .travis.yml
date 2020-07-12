@@ -1,6 +1,6 @@
 dist: xenial
 services:
-    # - xvfb
+    - xvfb
 language: node_js
 cache:
     directories:
@@ -15,18 +15,20 @@ addons:
 node_js:
     - '10'
 script:
-    - yarn && yarn test:prod && yarn build
+    # - 'if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then xvfb-run -a npm run e2e; fi'
+    - 'if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then npm run e2e:bs:test; fi'
+    - npm run test:prod && npm run build
 before_script:
-    # - 'wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip'
-    # - 'unzip BrowserStackLocal-linux-x64.zip'
-    # - './BrowserStackLocal --key "$BROWSERSTACK_KEY" --folder `pwd` &'
-    # - 'sleep 5'
+    - 'wget https://www.browserstack.com/browserstack-local/BrowserStackLocal-linux-x64.zip'
+    - 'unzip BrowserStackLocal-linux-x64.zip'
+    - './BrowserStackLocal --key "$BROWSERSTACK_KEY" --folder `pwd` &'
+    - 'sleep 5'
 after_success:
-    # - npm run travis-deploy-once "npm run report-coverage"
-    # - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
-    #   run travis-deploy-once "npm run deploy-docs"; fi
-    # - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
-    #   run travis-deploy-once "npm run semantic-release"; fi
+    - npm run travis-deploy-once "npm run report-coverage"
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
+      run travis-deploy-once "npm run deploy-docs"; fi
+    - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then npm
+      run travis-deploy-once "npm run semantic-release"; fi
 branches:
     except:
         - "/^v\\d+\\.\\d+\\.\\d+$/"
