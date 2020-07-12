@@ -72,8 +72,9 @@ const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetry
     })
 }
 
-const getStyleSheetsToBeHandled = function(styleSheets: StyleSheetList, domainMap: DomainMap) {
-    return (arrayFrom(styleSheets) as CSSStyleSheet[]).filter(styleSheet => {
+const getStyleSheetsToBeHandled = (styleSheets: StyleSheetList, domainMap: DomainMap): CSSStyleSheet[] => {
+    const sheetsArray = arrayFrom(styleSheets) as unknown as CSSStyleSheet[];
+    return sheetsArray.filter(styleSheet => {
         if (!supportRules(styleSheet)) {
             return false
         }

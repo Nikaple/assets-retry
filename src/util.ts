@@ -63,7 +63,7 @@ export const toSlug = function(str: string) {
  * @param {ArrayLike<T>} arrayLike
  * @returns {T[]}
  */
-export const arrayFrom = function<T>(arrayLike: ArrayLike<T>): T[] {
+export const arrayFrom = function<T>(arrayLike: Iterable<T> | ArrayLike<T>): T[] {
     return [].slice.call(arrayLike)
 }
 /**
