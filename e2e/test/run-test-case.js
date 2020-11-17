@@ -27,6 +27,11 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         const isVendorLoaded = await driver.executeScript('return window.loadedScripts.vendor')
         expect(isVendorLoaded).toBe(true)
         await expectStatToBe({
+            '/scripts/ignore-vendor.js': {
+                failed: [],
+                retryTimes: 0,
+                succeeded: []
+            },
             '/scripts/vendor.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/vendor.js`],
                 retryTimes: 1,
@@ -124,6 +129,11 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         const isCallbackOk = result === 'load'
         expect(isCallbackOk).toBe(true)
         await expectStatToBe({
+            '/scripts/ignore-async.js': {
+                failed: [],
+                retryTimes: 0,
+                succeeded: []
+            },
             '/scripts/async.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/async.js`],
                 retryTimes: 1,

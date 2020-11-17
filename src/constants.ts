@@ -12,6 +12,7 @@ export const innerOnerrorProp = '_assetsRetryOnerror'
 export const scriptTag = 'script'
 export const linkTag = 'link'
 export const hookedIdentifier = 'data-assets-retry-hooked'
+export const ignoreIdentifier = 'data-assets-retry-ignore'
 export const retryIdentifier = 'data-retry-id'
 export const win = window
 export const doc = window.document
