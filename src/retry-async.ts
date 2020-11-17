@@ -20,6 +20,7 @@ import {
     innerOnerrorProp,
     scriptTag,
     hookedIdentifier,
+    ignoreIdentifier,
     doc,
     ScriptElementCtor,
 } from './constants'
@@ -85,7 +86,8 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                                 src,
                                 domainMap
                             )
-                            if (!currentDomain || !currentCollector) {
+                            const shouldIgnore = self[innerScriptProp].hasAttribute(ignoreIdentifier)
+                            if (!currentDomain || !currentCollector || shouldIgnore) {
                                 return callOriginalOnError()
                             }
                             const newSrc = stringReplace(

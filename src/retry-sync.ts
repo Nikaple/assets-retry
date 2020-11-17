@@ -24,7 +24,8 @@ import {
     maxRetryCountProp,
     ScriptElementCtor,
     LinkElementCtor,
-    ImageElementCtor
+    ImageElementCtor,
+    ignoreIdentifier
 } from './constants'
 
 const retryCache: { [x: string]: boolean } = {}
@@ -61,7 +62,8 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         const [currentDomain, currentCollector] = extractInfoFromUrl(originalUrl, domainMap)
-        if (!currentCollector || !currentDomain) {
+        const hasIgnoreIdentifier = target instanceof HTMLElement && target.hasAttribute(ignoreIdentifier);
+        if (!currentCollector || !currentDomain || hasIgnoreIdentifier) {
             return
         }
         currentCollector[retryTimesProp]++
