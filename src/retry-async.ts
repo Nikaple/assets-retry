@@ -151,6 +151,8 @@ const createHookedScript = function(
     }
     const descriptors = getHookedScriptDescriptors($hookedScript, opts)
     Object.defineProperties($hookedScript, descriptors)
+    $hookedScript.onload = noop
+    $hookedScript.onerror = noop
     return $hookedScript
 }
 
