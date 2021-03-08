@@ -4,7 +4,7 @@ English | [简体中文](./README-cn.md)
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Travis](https://img.shields.io/travis/Nikaple/assets-retry.svg)](https://travis-ci.org/Nikaple/assets-retry)
-[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=RW5ISklMVUg1WlI2RGxCcllROXdOWmRuS1lITE02aUV2YXhWK2ROM05adz0tLXNrLzNMU3dSK3lod0pEbW1LUG4xbkE9PQ==--ce31c9e3015315c7aa4735e5976d047f9dc80eba)](https://automate.browserstack.com/public-build/RW5ISklMVUg1WlI2RGxCcllROXdOWmRuS1lITE02aUV2YXhWK2ROM05adz0tLXNrLzNMU3dSK3lod0pEbW1LUG4xbkE9PQ==--ce31c9e3015315c7aa4735e5976d047f9dc80eba)
+[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=RWR6amtvRVdnWUlaWWgrNlVKMUwvZU9abHYyYXFabXRhMGF0bmhDSXpTMD0tLS9FajdQKzJHV0k4VmpHRzZEVE80c1E9PQ==--6ecb6f77a3b0faa7b3aefea903ecaad70e95ed33)](https://automate.browserstack.com/public-build/RWR6amtvRVdnWUlaWWgrNlVKMUwvZU9abHYyYXFabXRhMGF0bmhDSXpTMD0tLS9FajdQKzJHV0k4VmpHRzZEVE80c1E9PQ==--6ecb6f77a3b0faa7b3aefea903ecaad70e95ed33)
 
 A tiny non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, only 3 KB gzipped, even works with dynamic import!
 
@@ -104,16 +104,16 @@ type Domain = string[] | { [x: string]: string }
     -   object type: `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` means failed assets from `a.cdn` should be retried from `b.cdn`, failed assets from `c.cdn` should be retried from `d.cdn`
 -   `maxRetryCount`: maximum retry count for each asset, default is 3
 -   `onRetry`: hook function which was called before trying to load any assets
-    - the function takes 3 parameters:
-        - `currentUrl`: next url to try
-        - `originalUrl`: last failed url
-        - `retryCollector`: information collector for current asset, if the asset was from `url()` function defined in your stylesheets, **it will be null**. When it's not `null`, it's an object with following properties:
-            - `retryTimes`: current retry times (starts from 1) 
-            - `failed`: failed assets list(may be duplicated when retrying from the same domain multiple times)
-            - `succeeded`: succeeded assets list
-    - the function must return a `String` or `null`:
-        - when null was returned, current retry will be terminated.
-        - when string was returned, current retry url will be the return value.
+    -   the function takes 3 parameters:
+        -   `currentUrl`: next url to try
+        -   `originalUrl`: last failed url
+        -   `retryCollector`: information collector for current asset, if the asset was from `url()` function defined in your stylesheets, **it will be null**. When it's not `null`, it's an object with following properties:
+            -   `retryTimes`: current retry times (starts from 1)
+            -   `failed`: failed assets list(may be duplicated when retrying from the same domain multiple times)
+            -   `succeeded`: succeeded assets list
+    -   the function must return a `String` or `null`:
+        -   when null was returned, current retry will be terminated.
+        -   when string was returned, current retry url will be the return value.
 -   `onSuccess`: hook function which was called when asset has loaded
     -   `currentUrl`: return the asset name which you can use to get statistics from information collector
 -   `onFail`: hook function which was called when asset failed to load
