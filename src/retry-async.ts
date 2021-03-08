@@ -166,9 +166,9 @@ const hookCreateElement = function(opts: InnerAssetsRetryOptions) {
         }
         return originalCreateElement.call(doc, name, options)
     }
-    doc.createElement.toString = function() {
-        return 'function createElement() { [native code] }'
-    }
+    // doc.createElement.toString = function() {
+    //     return 'function createElement() { [native code] }'
+    // }
 }
 
 /**
@@ -190,9 +190,9 @@ const hookPrototype = function(target: any) {
             return originalFunc.apply(this, args)
         }
         // keep original toString
-        if (/^\w+$/.test(key)) {
-            target[key].toString = new Function(`return 'function ${key}() { [native code] }'`)
-        }
+        // if (/^\w+$/.test(key)) {
+        //     target[key].toString = new Function(`return 'function ${key}() { [native code] }'`)
+        // }
     })
 }
 /**
