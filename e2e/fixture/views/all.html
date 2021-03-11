@@ -1,55 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-        <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
-        <script>
-            var prev = new Date().getTime()
-            var search = location.search
-            window.loadedScripts = {}
-            var domain = ['/e2e/not-exist', '/e2e/fixture']
-            if (/domain=3/.test(search)) {
-                domain.splice(1, 0, '/e2e/not-exist2')
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script>
+        var prev = new Date().getTime()
+        var search = location.search
+        window.loadedScripts = {}
+        var domain = ['/e2e/not-exist', '/e2e/fixture']
+        if (/domain=3/.test(search)) {
+            domain.splice(1, 0, '/e2e/not-exist2')
+        }
+        var succeeded = []
+        var failed = []
+        var stat = window.assetsRetry({
+            domain: domain,
+            maxRetryCount: 2,
+            onRetry: function (c, o, s) {
+                return c
+            },
+            onSuccess: function (url) {
+                succeeded.push(url)
+            },
+            onFail: function (url) {
+                failed.push(url)
             }
-            var succeeded = []
-            var failed = []
-            var stat = window.assetsRetry({
-                domain: domain,
-                maxRetryCount: 2,
-                onRetry: function(c, o, s) {
-                    return c
-                },
-                onSuccess: function(url) {
-                    succeeded.push(url)
-                },
-                onFail: function(url) {
-                    failed.push(url)
-                }
-            })
-            console.log('[time]: ', new Date().getTime() - prev)
-        </script>
-        <script src="/e2e/fixture/scripts/test.js"></script>
-        <style>
-            #styleTag {
-                background-image: url('/e2e/not-exist/images/background-image-style-tag.png');
-                background-size: contain;
-                background-repeat: no-repeat;
-            }
-        </style>
-        <link type="text/css" rel="stylesheet" href="/e2e/not-exist/styles/sync.css" />
-        <title>Assets Retry</title>
-    </head>
-    <body>
-        <h1>Assets Retry Test</h1>
-        <div id="result"></div>
-        <img id="img" src="/e2e/not-exist/images/img-tag.png" height="60" />
-        <div id="styleTag" style="height: 60px"></div>
-        <div id="cssSync" style="height: 60px"></div>
-        <div id="cssAsync" style="height: 60px"></div>
-        <script src="/e2e/not-exist/scripts/vendor.js"></script>
-        <script src="/e2e/not-exist/scripts/sync.js"></script>
-        <script></script>
-    </body>
+        })
+        console.log('[time]: ', new Date().getTime() - prev)
+    </script>
+    <script src="/e2e/fixture/scripts/test.js"></script>
+    <style>
+        #styleTag {
+            background-image: url('/e2e/not-exist/images/background-image-style-tag.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="/e2e/not-exist/styles/sync.css" />
+    <link type="text/css" rel="stylesheet" href="/e2e/fixture/styles/ok.css" />
+    <title>Assets Retry</title>
+</head>
+
+<body>
+    <h1>Assets Retry Test</h1>
+    <div id="result"></div>
+    <img id="img" src="/e2e/not-exist/images/img-tag.png" height="60" />
+    <div id="styleTag" style="height: 60px"></div>
+    <div id="cssSync" style="height: 60px"></div>
+    <div id="cssAsync" style="height: 60px"></div>
+    <script src="/e2e/not-exist/scripts/vendor.js"></script>
+    <script src="/e2e/not-exist/scripts/sync.js"></script>
+    <script src="/e2e/fixture/scripts/ok.js"></script>
+    <script></script>
+</body>
+
 </html>

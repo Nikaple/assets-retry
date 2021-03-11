@@ -1,4 +1,13 @@
-import { scriptTag, linkTag, doc, retryIdentifier, ScriptElementCtor, LinkElementCtor, ImageElementCtor, ElementCtor } from './constants'
+import {
+    scriptTag,
+    linkTag,
+    doc,
+    retryIdentifier,
+    ScriptElementCtor,
+    LinkElementCtor,
+    ImageElementCtor,
+    ElementCtor
+} from './constants'
 
 export const identity = function<T>(x: T): T {
     return x
@@ -44,6 +53,17 @@ export const stringReplace = function(current: string, oldStr: string, newStr: s
         return current
     }
     return current.substring(0, idx) + newStr + current.substring(idx + oldStr.length)
+}
+
+/**
+ * remove duplicates from an array of strings
+ */
+export const unique = function(array: string[]) {
+    const map = {} as any
+    array.forEach(item => {
+        map[item] = true
+    })
+    return Object.keys(map)
 }
 
 /**
@@ -131,7 +151,7 @@ export const loadNextScript = function(
     // when dealing with failed script tags in html,
     // use `document.write` to ensure the correctness
     // of loading order
-    const isAsyncScript = isAsync || $script.defer || $script.async;
+    const isAsyncScript = isAsync || $script.defer || $script.async
     // only use document.write for non-async scripts,
     // which includes script tag created by document.createElement
     // or with `defer` or `async` attribute
@@ -210,7 +230,7 @@ export const supportRules = function(styleSheet: CSSStyleSheet) {
  * @param {HTMLLinkElement} $link previous link element
  * @param {string} newHref new url to try
  */
-export const loadNextLink = function($link: HTMLLinkElement, newHref: string, onload: () => void) {
+export const loadNextLink = function($link: HTMLLinkElement, newHref: string, onload?: () => void) {
     const $newLink = doc.createElement(linkTag)
     // copy link properties except href:
     // disabled, href, crossOrigin, rel, relList, media, hreflang,
@@ -226,7 +246,8 @@ export const loadNextLink = function($link: HTMLLinkElement, newHref: string, on
         }
     })
     $newLink.href = newHref
-    $newLink.onload = onload
+    $newLink.onload = onload || $link.onload
+    $newLink.onerror = $link.onerror
     $newLink.setAttribute(retryIdentifier, randomString())
     doc.getElementsByTagName('head')[0].appendChild($newLink)
 }
@@ -261,5 +282,5 @@ export const getTargetUrl = function(target: EventTarget | null) {
     if (target instanceof LinkElementCtor) {
         return target.href
     }
-    return null
+    return ''
 }

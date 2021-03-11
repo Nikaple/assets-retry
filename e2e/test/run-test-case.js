@@ -21,6 +21,37 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         jest.setTimeout(60000)
     })
 
+    it('should be able to collect stats without retry', async () => {
+        await driver.get(`${baseUri}/e2e/fixture/views/ok.html`)
+        await waitForCssSelector('script[src*="fixture"]')
+        const isOkLoaded = await driver.executeScript('return window.loadedScripts.ok')
+        expect(isOkLoaded).toBe(true)
+        await expectStatToBe({
+            "/styles/ok.css": {
+                "retryTimes": 0,
+                "failed": [],
+                "succeeded": [
+                    `${baseUri}/e2e/fixture/styles/ok.css`
+                ]
+            },
+            "/images/img-tag.png": {
+                "retryTimes": 0,
+                "failed": [],
+                "succeeded": [
+                    `${baseUri}/e2e/fixture/images/img-tag.png`
+                ]
+            },
+            "/scripts/ok.js": {
+                "retryTimes": 0,
+                "failed": [],
+                "succeeded": [
+                    `${baseUri}/e2e/fixture/scripts/ok.js`
+                ]
+            }
+        })
+        await expectSucceededToBe(['/scripts/ok.js', '/images/img-tag.png', '/styles/ok.css'])
+    })
+
     it('should be able to retry sync scripts', async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/script-sync.html`)
         await waitForCssSelector('script[src*="fixture"]')
@@ -139,6 +170,11 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/scripts/async.js`]
             },
+            '/scripts/async2.js': {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/scripts/async2.js`]
+            },
             '/scripts/not-exist-async.js': {
                 failed: [
                     `${baseUri}/e2e/not-exist/scripts/not-exist-async.js`,
@@ -148,7 +184,7 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
                 succeeded: []
             }
         })
-        await expectSucceededToBe(['/scripts/async.js'])
+        await expectSucceededToBe(['/scripts/async.js', '/scripts/async2.js'])
         await expectFailedToBe(['/scripts/not-exist-async.js'])
     })
 
@@ -163,8 +199,14 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
             return /fixture/.test(backgroundImage)
         })
         // background-image do not show in stats
-        await expectStatToBe({})
-        await expectSucceededToBe([])
+        await expectStatToBe({
+            '/styles/sync.css': {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/styles/sync.css`]
+            },
+        })
+        await expectSucceededToBe(['/styles/sync.css'])
         await expectFailedToBe([])
     })
 
@@ -179,7 +221,13 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
             return /fixture/.test(backgroundImage)
         })
         // background-image do not show in stats
-        await expectStatToBe({})
+        await expectStatToBe({
+            '/styles/async.css': {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/styles/async.css`]
+            },
+        })
     })
 
     it('should be able to pass complex test', async () => {
@@ -202,6 +250,13 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/images/img-tag.png`]
             },
+            "/scripts/ok.js": {
+                "failed": [],
+                "retryTimes": 0,
+                "succeeded": [
+                    `${baseUri}/e2e/fixture/scripts/ok.js`,
+                ],
+            },
             '/scripts/async.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/async.js`],
                 retryTimes: 1,
@@ -212,10 +267,20 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/scripts/sync.js`]
             },
+            "/scripts/test.js": {
+                "failed": [],
+                "retryTimes": 0,
+                "succeeded": [`${baseUri}/e2e/fixture/scripts/test.js`],
+            },
             '/scripts/vendor.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/vendor.js`],
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/scripts/vendor.js`]
+            },
+            "/styles/ok.css": {
+                "failed": [],
+                "retryTimes": 0,
+                "succeeded": [`${baseUri}/e2e/fixture/styles/ok.css`],
             },
             '/styles/async.css': {
                 failed: [`${baseUri}/e2e/not-exist/styles/async.css`],
@@ -233,9 +298,11 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
             '/scripts/vendor.js',
             '/images/img-tag.png',
             '/scripts/sync.js',
+            '/scripts/ok.js',
+            '/scripts/test.js',
             '/styles/async.css',
+            '/styles/ok.css',
             '/scripts/async.js',
-            '/images/img-tag.png'
         ])
         await expectFailedToBe([])
     })

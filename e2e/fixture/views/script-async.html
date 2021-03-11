@@ -1,50 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
-        <script type="text/javascript">
-            var succeeded = []
-            var failed = []
-            var stat = window.assetsRetry({
-                domain: ['/e2e/not-exist', '/e2e/fixture'],
-                maxRetryCount: 1,
-                onSuccess: function(url) {
-                    succeeded.push(url)
-                },
-                onFail: function(url) {
-                    failed.push(url)
-                }
+
+<head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var succeeded = []
+        var failed = []
+        var stat = window.assetsRetry({
+            domain: ['/e2e/not-exist', '/e2e/fixture'],
+            maxRetryCount: 1,
+            onSuccess: function (url) {
+                succeeded.push(url)
+            },
+            onFail: function (url) {
+                failed.push(url)
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var loadScript = function (src, cb, ignore) {
+            var $script = document.createElement('script')
+            $script.src = src
+            var onComplete = function (event) {
+                $script.onload = $script.onerror = null
+                cb(event)
+            }
+            $script.onload = onComplete
+            $script.onerror = onComplete
+            if (ignore) {
+                $script.setAttribute('data-assets-retry-ignore', true);
+            }
+            document.getElementsByTagName('head')[0].appendChild($script)
+        }
+        window.onload = function () {
+            loadScript('/e2e/not-exist/scripts/async.js', function (event) {
+                document.body.innerHTML += '<div id="result">' + event.type + '</div>'
             })
-        </script>
-    </head>
-    <body>
-        <script type="text/javascript">
-            var loadScript = function(src, cb, ignore) {
-                var $script = document.createElement('script')
-                $script.src = src
-                var onComplete = function(event) {
-                    $script.onload = $script.onerror = null
-                    cb(event)
-                }
-                $script.onload = onComplete
-                $script.onerror = onComplete
-                if (ignore) {
-                    $script.setAttribute('data-assets-retry-ignore', true);
-                }
-                document.getElementsByTagName('head')[0].appendChild($script)
-            }
-            window.onload = function() {
-                loadScript('/e2e/not-exist/scripts/async.js', function(event) {
-                    document.body.innerHTML += '<div id="result">' + event.type + '</div>'
-                })
-                loadScript('/e2e/not-exist/scripts/not-exist-async.js', function(event) {
-                    document.body.innerHTML += '<div id="not-exist-result">' + event.type + '</div>'
-                })
-                loadScript('/e2e/not-exist/scripts/ignore-async.js', function(event) {
-                    document.body.innerHTML += '<div id="not-exist-result">' + event.type + '</div>'
-                }, true)
-            }
-        </script>
-    </body>
+            loadScript('/e2e/fixture/scripts/async2.js', function (event) {
+                document.body.innerHTML += '<div id="result">' + event.type + '</div>'
+            })
+            loadScript('/e2e/not-exist/scripts/not-exist-async.js', function (event) {
+                document.body.innerHTML += '<div id="not-exist-result">' + event.type + '</div>'
+            })
+            loadScript('/e2e/not-exist/scripts/ignore-async.js', function (event) {
+                document.body.innerHTML += '<div id="ignore-result">' + event.type + '</div>'
+            }, true)
+        }
+    </script>
+</body>
+
 </html>

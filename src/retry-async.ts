@@ -5,31 +5,37 @@ import {
     loadNextScript,
     safeCall,
     hasOwn,
-    noop
+    noop,
+    getTargetUrl,
+    loadNextLink,
+    unique
 } from './util'
 
 import {
     retryTimesProp,
-    succeededProp,
     failedProp,
     maxRetryCountProp,
     onRetryProp,
     domainProp,
-    innerScriptProp,
+    innerProxyProp,
     innerOnloadProp,
     innerOnerrorProp,
+    linkTag,
     scriptTag,
     hookedIdentifier,
     ignoreIdentifier,
     doc,
     ScriptElementCtor,
+    LinkElementCtor
 } from './constants'
 import { retryCollector } from './collector'
 import { prepareDomainMap, extractInfoFromUrl } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
 
-export interface HookedScript {
-    [innerScriptProp]: HTMLScriptElement
+type DynamicElement = HTMLScriptElement | HTMLLinkElement
+
+export interface HookedElement {
+    [innerProxyProp]: DynamicElement
     [innerOnerrorProp]: (e: Partial<Event>) => void
     [x: string]: any
 }
@@ -38,64 +44,69 @@ export interface HookedScript {
 // (including prototype properties) because it's big (length > 200)
 // otherwise it would be calculated every time when
 // a script request failed.
-let scriptProperties: string[];
+let scriptAndLinkProperties: string[]
 try {
-    scriptProperties = collectPropertyNames(ScriptElementCtor.prototype)
-} catch (_) { /* noop */ }
+    scriptAndLinkProperties = unique([
+        ...collectPropertyNames(ScriptElementCtor.prototype),
+        ...collectPropertyNames(LinkElementCtor.prototype)
+    ])
+} catch (_) {
+    /* noop */
+}
 
 /**
- * create the descriptor of hooked script object,
- * accessing any property on the hooked script object
- * will be delegated to the real HTMLScriptElement
+ * create the descriptor of hooked element object,
+ * accessing any property on the hooked element object
+ * will be delegated to the real HTMLElement
  * except onload/onerror events
  *
  * @param {any} self hookedScript
  * @param {object} opts
  * @returns
  */
-const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAssetsRetryOptions) {
+const getHookedElementDescriptors = function(self: HookedElement, opts: InnerAssetsRetryOptions) {
     const maxRetryCount = opts[maxRetryCountProp]
     const domainMap = prepareDomainMap(opts[domainProp])
     const onRetry = opts[onRetryProp]
-    return scriptProperties.reduce(function(descriptor, key) {
+    return scriptAndLinkProperties.reduce(function(descriptor, key) {
         const isFn = isFunctionProperty(ScriptElementCtor.prototype, key)
         // for function properties,
         // do not assign getters/setters
         if (isFn) {
             descriptor[key] = {
                 value: function() {
-                    return (self[innerScriptProp] as any)[key].apply(
-                        self[innerScriptProp],
-                        arguments
-                    )
+                    return (self[innerProxyProp] as any)[key].apply(self[innerProxyProp], arguments)
                 }
             }
         } else {
             descriptor[key] = {
                 set: function(newVal) {
+                    const realElement = self[innerProxyProp]
                     if (key === 'onerror') {
                         self[innerOnerrorProp] = newVal
                         // hook error events,
                         // forward the original onerror handler
                         // to the next script element to load
-                        ;(self[innerScriptProp] as any).onerror = function(event: ErrorEvent) {
+                        realElement.onerror = function(event: Event | string) {
+                            if (typeof event === 'string') return
                             event.stopPropagation && event.stopPropagation()
-                            const callOriginalOnError = () => safeCall(self[innerOnerrorProp], self[innerScriptProp], event)
-                            const src = self[innerScriptProp].src
+                            const callOriginalOnError = () =>
+                                safeCall(self[innerOnerrorProp], realElement, event)
+                            const url = getTargetUrl(realElement)
                             const [currentDomain, currentCollector] = extractInfoFromUrl(
-                                src,
+                                url,
                                 domainMap
                             )
-                            const shouldIgnore = self[innerScriptProp].hasAttribute(ignoreIdentifier)
+                            const shouldIgnore = realElement.hasAttribute(ignoreIdentifier)
                             if (!currentDomain || !currentCollector || shouldIgnore) {
                                 return callOriginalOnError()
                             }
                             const newSrc = stringReplace(
-                                src,
+                                url,
                                 currentDomain,
                                 domainMap[currentDomain]
                             )
-                            const userModifiedSrc = onRetry(newSrc, src, currentCollector)
+                            const userModifiedSrc = onRetry(newSrc, url, currentCollector)
                             // if onRetry returns null, do not retry this url
                             if (userModifiedSrc === null) {
                                 return callOriginalOnError()
@@ -105,7 +116,11 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                                 throw new Error('a string should be returned in `onRetry` function')
                             }
                             if (currentCollector[retryTimesProp] <= maxRetryCount) {
-                                loadNextScript(self[innerScriptProp], userModifiedSrc, noop, true)
+                                if (realElement instanceof ScriptElementCtor) {
+                                    loadNextScript(realElement, userModifiedSrc, noop, true)
+                                } else if (realElement instanceof LinkElementCtor) {
+                                    loadNextLink(realElement, userModifiedSrc)
+                                }
                             } else {
                                 callOriginalOnError()
                             }
@@ -114,25 +129,18 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
                     }
                     if (key === 'onload') {
                         self[innerOnloadProp] = newVal
-                        self[innerScriptProp].onload = function(event: Event) {
-                            const src = self[innerScriptProp].src
-                            const [_, currentCollector] = extractInfoFromUrl(src, domainMap)
-                            if (currentCollector) {
-                                if (currentCollector[failedProp].indexOf(src) === -1) {
-                                    currentCollector[succeededProp].push(src)
-                                }
-                            }
+                        self[innerProxyProp].onload = function(event: Event) {
                             if (newVal && !newVal._called) {
                                 newVal._called = true
-                                newVal.call(self[innerScriptProp], event)
+                                newVal.call(self[innerProxyProp], event)
                             }
                         }
                         return
                     }
-                    ;(self[innerScriptProp] as any)[key] = newVal
+                    ;(realElement as any)[key] = newVal
                 },
                 get() {
-                    return (self[innerScriptProp] as any)[key]
+                    return (self[innerProxyProp] as any)[key]
                 }
             }
         }
@@ -140,20 +148,20 @@ const getHookedScriptDescriptors = function(self: HookedScript, opts: InnerAsset
     }, {} as PropertyDescriptorMap)
 }
 
-const createHookedScript = function(
-    $script: HTMLScriptElement,
+const createHookedElement = function(
+    $element: DynamicElement,
     opts: InnerAssetsRetryOptions
-): HookedScript {
-    $script.setAttribute(hookedIdentifier, 'true')
-    const $hookedScript: HookedScript = {
-        [innerScriptProp]: $script,
+): HookedElement {
+    $element.setAttribute(hookedIdentifier, 'true')
+    const $hookedElement: HookedElement = {
+        [innerProxyProp]: $element,
         [innerOnerrorProp]: noop
     }
-    const descriptors = getHookedScriptDescriptors($hookedScript, opts)
-    Object.defineProperties($hookedScript, descriptors)
-    $hookedScript.onload = noop
-    $hookedScript.onerror = noop
-    return $hookedScript
+    const descriptors = getHookedElementDescriptors($hookedElement, opts)
+    Object.defineProperties($hookedElement, descriptors)
+    $hookedElement.onload = noop
+    $hookedElement.onerror = noop
+    return $hookedElement
 }
 
 /**
@@ -163,8 +171,8 @@ const createHookedScript = function(
 const hookCreateElement = function(opts: InnerAssetsRetryOptions) {
     const originalCreateElement = doc.createElement
     ;(doc as any).createElement = function(name: string, options: any): any {
-        if (name === scriptTag) {
-            return createHookedScript((originalCreateElement as any).call(doc, scriptTag), opts)
+        if (name === scriptTag || name === linkTag) {
+            return createHookedElement((originalCreateElement as any).call(doc, name), opts)
         }
         return originalCreateElement.call(doc, name, options)
     }
@@ -183,8 +191,8 @@ const hookPrototype = function(target: any) {
         const originalFunc = target[key]
         target[key] = function(): any {
             const args = [].slice.call(arguments).map((item: any) => {
-                if (!item) return item;
-                return hasOwn.call(item, innerScriptProp) ? item[innerScriptProp] : item
+                if (!item) return item
+                return hasOwn.call(item, innerProxyProp) ? item[innerProxyProp] : item
             })
             return originalFunc.apply(this, args)
         }

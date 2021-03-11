@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var succeeded = []
+        var failed = []
+        var stat = window.assetsRetry({
+            domain: ['/e2e/not-exist', '/e2e/fixture'],
+            maxRetryCount: 1,
+            onSuccess: function (url) {
+                succeeded.push(url)
+            },
+            onFail: function (url) {
+                failed.push(url)
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <div id="cssAsync" style="height: 60px"></div>
+    <script type="text/javascript">
+        var loadCss = function (href, cb, ignore) {
+            var $link = document.createElement('link')
+            $link.href = href;
+            $link.rel = $link.rev = 'stylesheet';
+            $link.type = 'text/css';
+            var onComplete = function (event) {
+                $link.onload = $link.onerror = null;
+                cb(event)
+            }
+            if (ignore) {
+                $link.setAttribute('data-assets-retry-ignore', true);
+            }
+            $link.onload = onComplete;
+            $link.onerror = onComplete;
+            document.getElementsByTagName('head')[0].appendChild($link);
+        }
+        window.onload = function () {
+            loadCss('/e2e/not-exist/styles/async.css', function (event) {
+                document.body.innerHTML += '<div id="result"> async.css: ' + event.type + '</div>'
+            })
+            loadCss('/e2e/not-exist/scripts/not-exist-async.css', function (event) {
+                document.body.innerHTML += '<div id="not-exist-result"> not-exists-async.css: ' + event.type + '</div>'
+            })
+            loadCss('/e2e/not-exist/scripts/ignore-async.css', function (event) {
+                document.body.innerHTML += '<div id="ignore-result"> ignore-async.css: ' + event.type + '</div>'
+            }, true)
+        }
+    </script>
+</body>
+
+</html>

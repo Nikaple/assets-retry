@@ -62,7 +62,8 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         const [currentDomain, currentCollector] = extractInfoFromUrl(originalUrl, domainMap)
-        const hasIgnoreIdentifier = target instanceof HTMLElement && target.hasAttribute(ignoreIdentifier);
+        const hasIgnoreIdentifier =
+            target instanceof HTMLElement && target.hasAttribute(ignoreIdentifier)
         if (!currentCollector || !currentDomain || hasIgnoreIdentifier) {
             return
         }
@@ -95,25 +96,25 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             return
         }
         retryCache[elementId] = true
-        const onloadCallback = () => {
-            currentCollector[succeededProp].push(userModifiedUrl)
-        }
         if (
             target instanceof ScriptElementCtor &&
             !target.getAttribute(hookedIdentifier) &&
             target.src
         ) {
-            loadNextScript(target, userModifiedUrl, onloadCallback)
+            loadNextScript(target, userModifiedUrl)
             return
         }
-        if (target instanceof LinkElementCtor && target.href) {
-            loadNextLink(target, userModifiedUrl, onloadCallback)
+        if (
+            target instanceof LinkElementCtor &&
+            !target.getAttribute(hookedIdentifier) &&
+            target.href
+        ) {
+            loadNextLink(target, userModifiedUrl)
             return
         }
         if (target instanceof ImageElementCtor && target.src) {
             target.setAttribute(retryIdentifier, randomString())
             target.src = userModifiedUrl
-            target.onload = onloadCallback
         }
     }
 
@@ -132,12 +133,17 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
             // not one of script / link / image element
             return
         }
-        if ((target as HTMLElement).getAttribute(retryIdentifier)) {
-            const [srcPath] = splitUrl(originalUrl, domainMap)
+        const [_, currentCollector] = extractInfoFromUrl(originalUrl, domainMap)
+        const [srcPath] = splitUrl(originalUrl, domainMap)
+        const callOnSuccess = () => {
+            if (currentCollector) {
+                currentCollector[succeededProp].push(originalUrl)
+            }
             onSuccess(srcPath)
         }
-        // only handle link element
+        // script / img tags succeeded to load without retry, add to collector
         if (!(target instanceof LinkElementCtor)) {
+            callOnSuccess()
             return
         }
         const supportStyleSheets = doc.styleSheets
@@ -153,9 +159,12 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (rules === null) {
             return
         }
+        // if the loaded stylesheet does not have rules, treat as failed
         if (rules.length === 0) {
             errorHandler(event)
+            return
         }
+        callOnSuccess()
     }
 
     doc.addEventListener('error', errorHandler, true)
