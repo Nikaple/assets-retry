@@ -2,10 +2,6 @@
 
 # 静态资源自动重试
 
-[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
-[![Travis](https://img.shields.io/travis/Nikaple/assets-retry.svg)](https://travis-ci.org/Nikaple/assets-retry)
-[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)](https://automate.browserstack.com/public-build/VTVHakxTU3EyUjl1M1lWN0VEbTdzZjBmbzZqRG9aNHVuSWZWODBNTHY2az0tLTZ4TEtuNktYSUwzK2V5SlpleFRINUE9PQ==--5737afaf240f8e5eb5cc6beb0f2460666ea0e33c)
-
 当页面中的脚本、样式、图片资源无法正常加载时，自动重试加载失败的资源。支持备用域名、动态导入（dynamic import），无需改动现有代码，仅需 3 KB （gzipped）。
 
 ![Demo GIF](./public/assets-retry.gif)
@@ -108,16 +104,16 @@ type Domain = string[] | { [x: string]: string }
     -   对象类型：如 `{ 'a.cdn': 'b.cdn', 'c.cdn': 'd.cdn' }` 表示在 `a.cdn` 失败的资源应从 `b.cdn` 重试，在 `c.cdn` 失败的资源应从 `d.cdn` 重试。
 -   `maxRetryCount`: 每个资源的最大重试次数
 -   `onRetry`: 在每次尝试重新加载资源时执行
-    - 该函数接收 3 个参数：
-        - `currentUrl`: 即将被选为重试地址的 `URL`
-        - `originalUrl`: 上一次加载失败的 `URL`
-        - `retryCollector`: 为当前资源的数据收集对象，如果资源为 CSS 中使用 `url` 引用的图片资源，**该参数为 `null`** 。当该参数不为 `null` 时，包含 3 个属性：
-            - `retryTimes`: 表示当前为第 x 次重试（从 1 开始）
-            - `failed`: 已失败的资源列表（从同一域名加载多次时，可能重复）
-            - `succeeded`: 已成功的资源列表
-    - 该函数的返回值必须为字符串或 `null` 对象。
-        - 当返回 `null` 时，表示终止该次重试
-        - 当返回字符串（url）时，会尝试从 url 中加载资源。
+    -   该函数接收 3 个参数：
+        -   `currentUrl`: 即将被选为重试地址的 `URL`
+        -   `originalUrl`: 上一次加载失败的 `URL`
+        -   `retryCollector`: 为当前资源的数据收集对象，如果资源为 CSS 中使用 `url` 引用的图片资源，**该参数为 `null`** 。当该参数不为 `null` 时，包含 3 个属性：
+            -   `retryTimes`: 表示当前为第 x 次重试（从 1 开始）
+            -   `failed`: 已失败的资源列表（从同一域名加载多次时，可能重复）
+            -   `succeeded`: 已成功的资源列表
+    -   该函数的返回值必须为字符串或 `null` 对象。
+        -   当返回 `null` 时，表示终止该次重试
+        -   当返回字符串（url）时，会尝试从 url 中加载资源。
 -   `onSuccess`: 在域名列表内的资源最终加载成功时执行：
     -   `currentUrl`: 资源名，可通过该名称来找到当前资源的数据收集对象
 -   `onFail`: 在域名列表内的资源最终加载失败时执行：

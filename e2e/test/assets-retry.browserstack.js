@@ -41,6 +41,7 @@ describe('BrowserStack', () => {
                 asyncLoaded
             )
         })
+        await new Promise(resolve => setTimeout(resolve, 5000));
         // wait for browser to retry background image
         // background-image do not show in stats
         await expectStatToBe({
