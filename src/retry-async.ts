@@ -13,7 +13,6 @@ import {
 
 import {
     retryTimesProp,
-    failedProp,
     maxRetryCountProp,
     onRetryProp,
     domainProp,

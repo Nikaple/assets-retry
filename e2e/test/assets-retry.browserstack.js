@@ -1,6 +1,8 @@
 const capabilities = configuration.capabilities
 const baseUri = `http://${capabilities['browserstack.user']}.browserstack.com`
 
+jest.retryTimes(3)
+
 describe('BrowserStack', () => {
     const expectStatToBe = async target => {
         const stat = await driver.executeScript('return window.stat')
@@ -47,6 +49,11 @@ describe('BrowserStack', () => {
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/images/img-tag.png`]
             },
+            "/scripts/ok.js": {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/scripts/ok.js`],
+            },
             '/scripts/async.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/async.js`],
                 retryTimes: 1,
@@ -57,10 +64,20 @@ describe('BrowserStack', () => {
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/scripts/sync.js`]
             },
+            "/scripts/test.js": {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/scripts/test.js`],
+            },
             '/scripts/vendor.js': {
                 failed: [`${baseUri}/e2e/not-exist/scripts/vendor.js`],
                 retryTimes: 1,
                 succeeded: [`${baseUri}/e2e/fixture/scripts/vendor.js`]
+            },
+            "/styles/ok.css": {
+                failed: [],
+                retryTimes: 0,
+                succeeded: [`${baseUri}/e2e/fixture/styles/ok.css`],
             },
             '/styles/async.css': {
                 failed: [`${baseUri}/e2e/not-exist/styles/async.css`],
