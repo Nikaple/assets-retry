@@ -12,7 +12,7 @@ module.exports = {
             'browserstack.idleTimeout': 300,
             'browserstack.local': true,
             'browserstack.debug': true,
-            'browserstack.user': 'nikaplezhou1',
+            'browserstack.user': 'nikapletest1',
             'browserstack.key': process.env.BROWSERSTACK_KEY
         }
     },

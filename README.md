@@ -4,7 +4,7 @@ English | [简体中文](./README-cn.md)
 
 [![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 [![Travis](https://img.shields.io/travis/Nikaple/assets-retry.svg)](https://travis-ci.org/Nikaple/assets-retry)
-[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=RWR6amtvRVdnWUlaWWgrNlVKMUwvZU9abHYyYXFabXRhMGF0bmhDSXpTMD0tLS9FajdQKzJHV0k4VmpHRzZEVE80c1E9PQ==--6ecb6f77a3b0faa7b3aefea903ecaad70e95ed33)](https://automate.browserstack.com/public-build/RWR6amtvRVdnWUlaWWgrNlVKMUwvZU9abHYyYXFabXRhMGF0bmhDSXpTMD0tLS9FajdQKzJHV0k4VmpHRzZEVE80c1E9PQ==--6ecb6f77a3b0faa7b3aefea903ecaad70e95ed33)
+[![BrowserStack Status](https://automate.browserstack.com/badge.svg?badge_key=alVnWlJ4TENObnUxMU9hR25BYmg5a2ZoeTMrcDBodmM1UFl2RTc2VkJtST0tLWVmRUVYSnJ5ZVI2YXpMUmQ3bXdNMHc9PQ==--97de235bf21fb9b311105f218db353f19ed8969a)](https://automate.browserstack.com/public-build/alVnWlJ4TENObnUxMU9hR25BYmg5a2ZoeTMrcDBodmM1UFl2RTc2VkJtST0tLWVmRUVYSnJ5ZVI2YXpMUmQ3bXdNMHc9PQ==--97de235bf21fb9b311105f218db353f19ed8969a)
 
 A tiny non-intrusive library to retry your assets (scripts, stylesheets, images) when they failed to load, only 3 KB gzipped, even works with dynamic import!
 
