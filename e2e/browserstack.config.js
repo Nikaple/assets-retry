@@ -9,11 +9,14 @@ module.exports = {
         capabilities: {
             build: `${require('../package.json').version}_${now}`,
             project: 'assets-retry',
+            'build': process.env.BROWSERSTACK_BUILD_NAME,
+            'project': process.env.BROWSERSTACK_PROJECT_NAME,
             'browserstack.idleTimeout': 300,
             'browserstack.local': true,
             'browserstack.debug': true,
-            'browserstack.user': 'nikapletest1',
-            'browserstack.key': process.env.BROWSERSTACK_KEY
+            'browserstack.localIdentifier': process.env.BROWSERSTACK_LOCAL_IDENTIFIER,
+            'browserstack.user': process.env.BROWSERSTACK_USERNAME,
+            'browserstack.key': process.env.BROWSERSTACK_ACCESS_KEY
         }
     },
     moduleFileExtensions: ['ts', 'tsx', 'js'],
