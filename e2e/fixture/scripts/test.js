@@ -7,7 +7,7 @@ setTimeout(function () {
             'vendor loaded: ' + loadedScripts.vendor,
             'sync chunk loaded: ' + loadedScripts.sync,
             'async chunk loaded: ' + loadedScripts.async,
-            'ok css loaded: ' + (getStyle(document.body).textDecoration == 'dashed'),
+            'ok css loaded: ' + /dashed/.test((getStyle(document.body).textDecoration)),
             'sync css loaded: ' + (getStyle(document.body).backgroundRepeat == 'no-repeat'),
             'async css loaded: ' + (getStyle(document.body).borderStyle === 'solid'),
             'img tag loaded: ' + /fixture/.test($id('img').src),

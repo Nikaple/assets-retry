@@ -7,10 +7,8 @@ module.exports = {
     testEnvironmentOptions: {
         server: 'http://hub-cloud.browserstack.com/wd/hub',
         capabilities: {
-            build: `${require('../package.json').version}_${now}`,
-            project: 'assets-retry',
-            'build': process.env.BROWSERSTACK_BUILD_NAME,
-            'project': process.env.BROWSERSTACK_PROJECT_NAME,
+            'build': process.env.BROWSERSTACK_BUILD_NAME || `${require('../package.json').version}_${now}`,
+            'project': process.env.BROWSERSTACK_PROJECT_NAME || 'assets-retry',
             'browserstack.idleTimeout': 300,
             'browserstack.local': true,
             'browserstack.debug': true,
