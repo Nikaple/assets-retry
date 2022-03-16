@@ -18,11 +18,14 @@ export const prepareDomainMap = function(domains: Domain): DomainMap {
     // array
     if (Array.isArray(domains)) {
         return domains.reduce(function(domainMap, domain, idx, array) {
-            domainMap[domain] = array[(idx + 1) % array.length]
+            const nextDomain =  array[(idx + 1) % array.length];
+            // 添加对于kong判断（主要是正对不同域名隔离）
+            nextDomain && domain && (domainMap[domain] = nextDomain);
             return domainMap
         }, {} as DomainMap)
     }
     // object
+    // generateDomainMap(['a.cdn', 'b.cdn', 'c.cdn']) // {'a.cdn': 'b.cdn', 'b.cdn': 'c.cdn', 'c.cdn': 'a.cdn'}
     return domains
 }
 

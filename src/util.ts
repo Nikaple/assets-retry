@@ -58,6 +58,7 @@ export const stringReplace = function(current: string, oldStr: string, newStr: s
 /**
  * remove duplicates from an array of strings
  */
+// 过滤掉所有相同属性
 export const unique = function(array: string[]) {
     const map = {} as any
     array.forEach(item => {
@@ -92,6 +93,7 @@ export const arrayFrom = function<T>(arrayLike: Iterable<T> | ArrayLike<T>): T[]
  * @param {any} obj
  * @returns
  */
+// 获取script、link标签中除constructor的所有属性
 export const collectPropertyNames = function(obj: any) {
     const getProto = Object.getPrototypeOf
         ? Object.getPrototypeOf
@@ -151,11 +153,13 @@ export const loadNextScript = function(
     // when dealing with failed script tags in html,
     // use `document.write` to ensure the correctness
     // of loading order
+    // 是否是同步加载脚本
     const isAsyncScript = isAsync || $script.defer || $script.async
     // only use document.write for non-async scripts,
     // which includes script tag created by document.createElement
     // or with `defer` or `async` attribute
     if (doc.readyState === 'loading' && supportDocumentWrite() && !isAsyncScript) {
+        // `\x3Cscript data-retry-id="62s5e9uku6" src="http://i1.hdfimg.com/ssi/js/jweixin-1.6.0true.js" onerror="console.log('shinelp100')">\x3C/script>`
         const retryId = randomString()
         const newHtml = $script.outerHTML
             // delete previous retry id
