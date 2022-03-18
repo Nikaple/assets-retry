@@ -8,7 +8,8 @@ import {
     onSuccessProp,
     onFailProp,
     domainProp,
-    win
+    win,
+    styleImageNoImportant
 } from './constants'
 import { Domain, DomainMap, prepareDomainMap } from './url'
 import { identity, noop } from './util'
@@ -27,6 +28,7 @@ export interface AssetsRetryOptions {
     [onSuccessProp]?: SuccessFunction
     [onFailProp]?: FailFunction
     [domainProp]: Domain
+    [styleImageNoImportant]?: boolean
 }
 
 export interface InnerAssetsRetryOptions {
@@ -35,6 +37,7 @@ export interface InnerAssetsRetryOptions {
     [onSuccessProp]: SuccessFunction
     [onFailProp]: FailFunction
     [domainProp]: DomainMap
+    [styleImageNoImportant]: boolean
 }
 
 export default function init(opts: AssetsRetryOptions = {} as any) {
@@ -43,7 +46,7 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
         if (typeof opts[domainProp] !== 'object') {
             throw new Error('opts.domain cannot be non-object.')
         }
-        const optionList = [maxRetryCountProp, onRetryProp, onSuccessProp, onFailProp, domainProp]
+        const optionList = [maxRetryCountProp, onRetryProp, onSuccessProp, onFailProp, domainProp, styleImageNoImportant]
         const invalidOptions = Object.keys(opts).filter(key => optionList.indexOf(key) === -1)
         if (invalidOptions.length > 0) {
             throw new Error('option name: ' + invalidOptions.join(', ') + ' is not valid.')
@@ -53,7 +56,8 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
             [onRetryProp]: opts[onRetryProp] || identity,
             [onSuccessProp]: opts[onSuccessProp] || noop,
             [onFailProp]: opts[onFailProp] || noop,
-            [domainProp]: prepareDomainMap(opts[domainProp])
+            [domainProp]: prepareDomainMap(opts[domainProp]),
+            [styleImageNoImportant]: opts[styleImageNoImportant] || false
         }
         initAsync(innerOpts)
         initSync(innerOpts)

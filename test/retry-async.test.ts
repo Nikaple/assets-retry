@@ -10,7 +10,8 @@ describe('initAsync', () => {
             maxRetryCount: 1,
             onRetry: x => x,
             onSuccess: noop,
-            onFail: noop
+            onFail: noop,
+            styleImageNoImportant: false,
         })
     })
     beforeEach(() => {
