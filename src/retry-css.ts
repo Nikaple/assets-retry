@@ -41,7 +41,7 @@ const processRules = function(
             return `url("${userModifiedUrl}")`
         })
         .join(',')
-    const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList} !important; }`
+    const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList} ${opts.styleImageNoImportant ? '' : '!important'}; }`
     try {
         styleSheet.insertRule(cssText, styleRules.length)
     } catch (_) {
