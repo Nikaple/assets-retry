@@ -18,11 +18,26 @@ export const prepareDomainMap = function(domains: Domain): DomainMap {
     // array
     if (Array.isArray(domains)) {
         return domains.reduce(function(domainMap, domain, idx, array) {
-            const nextDomain =  array[(idx + 1) % array.length];
-            // 添加对于kong判断（主要是正对不同域名隔离）
-            nextDomain && domain && (domainMap[domain] = nextDomain);
+            domainMap[domain] = array[(idx + 1) % array.length]
             return domainMap
         }, {} as DomainMap)
+    }
+    // object
+    // generateDomainMap(['a.cdn', 'b.cdn', 'c.cdn']) // {'a.cdn': 'b.cdn', 'b.cdn': 'c.cdn', 'c.cdn': 'a.cdn'}
+    return domains
+}
+
+export const prepareDomainMaps = function(domains: Domain): DomainMap {
+    // array
+    if (Array.isArray(domains)) {
+        if(domains.some(item => !Array.isArray(item))){
+            return prepareDomainMap(domains)
+        }
+        const domainsUnion = {};
+        for(let i = 0; i < domains.length; i++){
+            Object.assign(domainsUnion, prepareDomainMap(<any>domains[i]))
+        }
+        return domainsUnion;
     }
     // object
     // generateDomainMap(['a.cdn', 'b.cdn', 'c.cdn']) // {'a.cdn': 'b.cdn', 'b.cdn': 'c.cdn', 'c.cdn': 'a.cdn'}

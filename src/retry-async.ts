@@ -28,7 +28,7 @@ import {
     LinkElementCtor
 } from './constants'
 import { retryCollector } from './collector'
-import { prepareDomainMap, extractInfoFromUrl } from './url'
+import { prepareDomainMaps, extractInfoFromUrl } from './url'
 import { InnerAssetsRetryOptions } from './assets-retry'
 
 type DynamicElement = HTMLScriptElement | HTMLLinkElement
@@ -68,7 +68,7 @@ const getHookedElementDescriptors = function(self: HookedElement, opts: InnerAss
     // 最大重试次数
     const maxRetryCount = opts[maxRetryCountProp]
     // prepareDomainMap(['a.cdn', 'b.cdn', 'c.cdn']) ---> {'a.cdn': 'b.cdn', 'b.cdn': 'c.cdn', 'c.cdn': 'a.cdn'}
-    const domainMap = prepareDomainMap(opts[domainProp])
+    const domainMap = prepareDomainMaps(opts[domainProp])
     // 通过该参数可自定义 URL 的转换方式
     const onRetry = opts[onRetryProp]
     // scriptAndLinkProperties script&link标签中所有的属性，合并后的属性
@@ -217,6 +217,7 @@ const hookPrototype = function(target: any) {
         target[key] = function(): any {
             const args = [].slice.call(arguments).map((item: any) => {
                 if (!item) return item
+                // 针对script、link 进行过滤代理
                 return hasOwn.call(item, innerProxyProp) ? item[innerProxyProp] : item
             })
             return originalFunc.apply(this, args)
@@ -230,6 +231,7 @@ const hookPrototype = function(target: any) {
  */
 export default function initAsync(opts: InnerAssetsRetryOptions) {
     hookCreateElement(opts)
+    // TODO: hookPrototype原因是？
     // eslint-disable-next-line
     if (typeof Node !== 'undefined') {
         hookPrototype(Node.prototype)
@@ -238,5 +240,6 @@ export default function initAsync(opts: InnerAssetsRetryOptions) {
     if (typeof Element !== 'undefined') {
         hookPrototype(Element.prototype)
     }
-    return retryCollector
+    // TODO: 为啥需要return？
+    // return retryCollector
 }

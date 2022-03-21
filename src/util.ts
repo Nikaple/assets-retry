@@ -153,11 +153,12 @@ export const loadNextScript = function(
     // when dealing with failed script tags in html,
     // use `document.write` to ensure the correctness
     // of loading order
-    // 是否是同步加载脚本
+    // 重要：是否是同步加载脚本，只有当script被同步加载时页面的加载才会被阻塞，这时候doc.readyState === 'loading'，我们通过doc.write阻塞页面同步插入脚本，达到保证script加载和执行的顺序
     const isAsyncScript = isAsync || $script.defer || $script.async
     // only use document.write for non-async scripts,
     // which includes script tag created by document.createElement
     // or with `defer` or `async` attribute
+    console.log('doc.readyState:', doc.readyState);
     if (doc.readyState === 'loading' && supportDocumentWrite() && !isAsyncScript) {
         // `\x3Cscript data-retry-id="62s5e9uku6" src="http://i1.hdfimg.com/ssi/js/jweixin-1.6.0true.js" onerror="console.log('shinelp100')">\x3C/script>`
         const retryId = randomString()
@@ -166,6 +167,7 @@ export const loadNextScript = function(
             .replace(/data-retry-id="[^"]+"/, '')
             .replace(/src=(?:"[^"]+"|.+)([ >])/, `${retryIdentifier}=${retryId} src="${newSrc}"$1`)
         doc.write(newHtml)
+        // 增加对loadNextScript方法onload的扩展性
         const newScript = doc.querySelector(
             `script[${retryIdentifier}="${retryId}"]`
         ) as HTMLScriptElement
@@ -174,6 +176,7 @@ export const loadNextScript = function(
         }
         return
     }
+    // script中添加async、defer异步会不阻塞dom的加载（document.readyState: loading ----> interactive ----> complete）
     const $newScript = doc.createElement(scriptTag)
     // copy script properties except src:
     // type, noModule, charset, async, defer,
