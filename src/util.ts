@@ -158,7 +158,6 @@ export const loadNextScript = function(
     // only use document.write for non-async scripts,
     // which includes script tag created by document.createElement
     // or with `defer` or `async` attribute
-    console.log('doc.readyState:', doc.readyState);
     if (doc.readyState === 'loading' && supportDocumentWrite() && !isAsyncScript) {
         // `\x3Cscript data-retry-id="62s5e9uku6" src="http://i1.hdfimg.com/ssi/js/jweixin-1.6.0true.js" onerror="console.log('shinelp100')">\x3C/script>`
         const retryId = randomString()
