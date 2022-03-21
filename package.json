@@ -21,6 +21,8 @@
   "scripts": {
     "lint": "eslint --fix -f codeframe 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
+    "prehdfbuild": "rimraf dist",
+    "hdfbuild": "NODE_ENV=prod __RETRY_IMAGE__=false rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
     "build": "__RETRY_IMAGE__=true rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
     "start": "__RETRY_IMAGE__=true rollup -c rollup.config.ts -w",
     "test": "jest",

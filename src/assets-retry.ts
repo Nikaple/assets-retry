@@ -65,7 +65,7 @@ export default function init(opts: AssetsRetryOptions = {} as any) {
         initSync(innerOpts)
         // process.env.__RETRY_IMAGE__ build时构建如果false就会绕过css 重试
         if (__RETRY_IMAGE__) {
-            // initCss(innerOpts)
+            initCss(innerOpts)
         }
         return retryCollector
     } catch (e) {

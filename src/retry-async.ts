@@ -231,7 +231,7 @@ const hookPrototype = function(target: any) {
  */
 export default function initAsync(opts: InnerAssetsRetryOptions) {
     hookCreateElement(opts)
-    // TODO: hookPrototype原因是？
+    // hookPrototype 为了调用改写后的方法或是属性
     // eslint-disable-next-line
     if (typeof Node !== 'undefined') {
         hookPrototype(Node.prototype)
@@ -240,6 +240,4 @@ export default function initAsync(opts: InnerAssetsRetryOptions) {
     if (typeof Element !== 'undefined') {
         hookPrototype(Element.prototype)
     }
-    // TODO: 为啥需要return？
-    // return retryCollector
 }
