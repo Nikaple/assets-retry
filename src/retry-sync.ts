@@ -76,7 +76,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         currentCollector[retryTimesProp]++
         currentCollector[failedProp].push(originalUrl)
         const isFinalRetry = currentCollector[retryTimesProp] > opts[maxRetryCountProp]
-        if (isFinalRetry) {
+        if (isFinalRetry && (target instanceof HTMLElement &&  target.hasAttribute(retryIdentifier))) {
             const [srcPath] = splitUrl(originalUrl, domainMap)
             onFail(srcPath)
         }
