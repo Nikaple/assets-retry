@@ -67,10 +67,16 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (!currentCollector || !currentDomain || hasIgnoreIdentifier) {
             return
         }
+        // cache retried elements
+        const elementId = hashTarget(target)
+        if (retryCache[elementId]) {
+            return
+        }
+        retryCache[elementId] = true
         currentCollector[retryTimesProp]++
         currentCollector[failedProp].push(originalUrl)
         const isFinalRetry = currentCollector[retryTimesProp] > opts[maxRetryCountProp]
-        if (isFinalRetry) {
+        if (isFinalRetry && (target instanceof HTMLElement &&  target.hasAttribute(retryIdentifier))) {
             const [srcPath] = splitUrl(originalUrl, domainMap)
             onFail(srcPath)
         }
@@ -90,12 +96,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function')
         }
-        // cache retried elements
-        const elementId = hashTarget(target)
-        if (retryCache[elementId]) {
-            return
-        }
-        retryCache[elementId] = true
         if (
             target instanceof ScriptElementCtor &&
             !target.getAttribute(hookedIdentifier) &&

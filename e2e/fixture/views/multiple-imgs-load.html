@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var succeeded = []
+        var failed = []
+        var stat = window.assetsRetry({
+            domain: ['/e2e/not-exist', '/e2e/not-exist/twice', '/e2e'],
+            maxRetryCount: 3,
+            onSuccess: function (url) {
+                succeeded.push(url)
+            },
+            onFail: function (url) {
+                failed.push(url)
+            }
+        })
+    </script>
+    <link type="text/css" rel="stylesheet" href="/e2e/fixture/styles/ok.css" />
+</head>
+
+<body>
+    <img src="/e2e/not-exist/fixture/images/img-tag.png" height="60" />
+    <img src="/e2e/not-exist/fixture/images/img-tag.png" height="60" />
+    <img src="/e2e/not-exist/fixture/images/img-tag.png" height="60" />
+    <img src="/e2e/not-exist/fixture/images/img-tag.png" height="60" />
+    <img src="/e2e/not-exist/fixture/images/img-tag.png" height="60" />
+</body>
+
+</html>
