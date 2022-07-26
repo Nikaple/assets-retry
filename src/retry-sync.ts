@@ -90,6 +90,11 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (typeof userModifiedUrl !== 'string') {
             throw new Error('a string should be returned in `onRetry` function')
         }
+        if (target instanceof ImageElementCtor && target.src) {
+            target.setAttribute(retryIdentifier, randomString())
+            target.src = userModifiedUrl
+            return
+        }
         // cache retried elements
         const elementId = hashTarget(target)
         if (retryCache[elementId]) {
@@ -111,10 +116,6 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         ) {
             loadNextLink(target, userModifiedUrl)
             return
-        }
-        if (target instanceof ImageElementCtor && target.src) {
-            target.setAttribute(retryIdentifier, randomString())
-            target.src = userModifiedUrl
         }
     }
 

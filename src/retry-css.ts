@@ -31,15 +31,27 @@ const processRules = function(
         return
     }
     const currentDomain = getCurrentDomain(originalUrl, domainMap)
-    if (!currentDomain || !domainMap[currentDomain]) {
+    if (!currentDomain) {
         return
     }
-    const urlList = Object.keys(domainMap)
+
+    let domain = currentDomain;
+    const urlMap: Record<string, boolean> = { [domain]: true };
+    while (domain && domainMap[domain]) {
+        const newDomain = domainMap[domain];
+        if (urlMap[newDomain]) {
+            break;
+        }
+        urlMap[newDomain] = true;
+        domain = newDomain;
+    }
+    const urlList = Object.keys(urlMap)
         .map(domain => {
             const newUrl = stringReplace(originalUrl, currentDomain, domain)
             const userModifiedUrl = onRetry(newUrl, originalUrl, null)
-            return `url("${userModifiedUrl}")`
+            return userModifiedUrl ? `url("${userModifiedUrl}")` : null;
         })
+        .filter(Boolean)
         .join(',')
     const cssText = rule.selectorText + `{ ${toSlug(name)}: ${urlList} ${opts.styleImageNoImportant ? '' : '!important'}; }`
     try {
