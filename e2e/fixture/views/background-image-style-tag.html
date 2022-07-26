@@ -8,7 +8,12 @@
         var succeeded = []
         var failed = []
         var stat = window.assetsRetry({
-            domain: ['/e2e/not-exist', '/e2e/fixture'],
+            domain: {
+                '/e2e/not-exist': '/e2e/fixture',
+
+                '/e2e/not-exist-1': '/e2e/fixture',
+                '/e2e/not-exist-3': '/e2e/not-exist-4',
+            },
             maxRetryCount: 1,
             onSuccess: function (url) {
                 succeeded.push(url)
@@ -24,11 +29,18 @@
             background-size: contain;
             background-repeat: no-repeat;
         }
+
+        #styleTag2 {
+            background-image: url('/e2e/not-exist-1/images/background-image-style-tag.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
     </style>
 </head>
 
 <body>
     <div id="styleTag" style="height: 60px"></div>
+    <div id="styleTag2" style="height: 60px"></div>
 </body>
 
 </html>

@@ -16,6 +16,11 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
     const waitForCssSelector = async selector => {
         return driver.wait(until.elementLocated(By.css(selector)), 10000)
     }
+    const getBackgroundImage = async selector => {
+        return driver.executeScript(
+            `return getComputedStyle(document.getElementById("${selector}")).backgroundImage`
+        )
+    }
 
     beforeEach(() => {
         jest.setTimeout(60000)
@@ -85,9 +90,7 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         await driver.get(`${baseUri}/e2e/fixture/views/background-image-style-tag.html`)
         // wait for browser to retry background image
         await driver.wait(async () => {
-            const backgroundImage = await driver.executeScript(
-                'return getComputedStyle(document.getElementById("styleTag")).backgroundImage'
-            )
+            const backgroundImage = await getBackgroundImage('styleTag');
             return /fixture/.test(backgroundImage)
         })
         // background-image do not show in stats
@@ -193,9 +196,7 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         await waitForCssSelector('link')
         // wait for browser to retry background image
         await driver.wait(async () => {
-            const backgroundImage = await driver.executeScript(
-                'return getComputedStyle(document.getElementById("cssSync")).backgroundImage'
-            )
+            const backgroundImage = await getBackgroundImage('cssSync')
             return /fixture/.test(backgroundImage)
         })
         // background-image do not show in stats
@@ -215,9 +216,7 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         await waitForCssSelector('link')
         // wait for browser to retry background image
         await driver.wait(async () => {
-            const backgroundImage = await driver.executeScript(
-                'return getComputedStyle(document.getElementById("cssAsync")).backgroundImage'
-            )
+            const backgroundImage = await getBackgroundImage('cssAsync')
             return /fixture/.test(backgroundImage)
         })
         // background-image do not show in stats
@@ -230,16 +229,32 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         })
     })
 
+    it('should be able to retry background images in style tags', async () => {
+        await driver.get(`${baseUri}/e2e/fixture/views/background-image-style-tag.html`)
+        // wait for browser to retry background image
+        await driver.wait(async () => {
+            const backgroundImage = await getBackgroundImage('styleTag')
+            const backgroundImage2 = await getBackgroundImage('styleTag2')
+            return /fixture/.test(backgroundImage) && /fixture/.test(backgroundImage2)
+        })
+        // background-image do not show in stats
+        await expectStatToBe({})
+        const backgroundImage = await getBackgroundImage('styleTag')
+        const backgroundImage2 = await getBackgroundImage('styleTag2')
+
+        expect(backgroundImage.includes('/not-exist/')).toBe(true)
+        expect(backgroundImage.includes('/not-exist-1/')).toBe(false)
+
+        expect(backgroundImage2.includes('/not-exist/')).toBe(false)
+        expect(backgroundImage2.includes('/not-exist-1/')).toBe(true)
+    })
+
     it('should be able to pass complex test', async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/all.html`)
         // background-images is the slowest
         await driver.wait(async () => {
-            const backgroundImageSync = await driver.executeScript(
-                'return getComputedStyle(document.getElementById("cssSync")).backgroundImage'
-            )
-            const backgroundImageAsync = await driver.executeScript(
-                'return getComputedStyle(document.getElementById("cssAsync")).backgroundImage'
-            )
+            const backgroundImageSync = await getBackgroundImage('cssSync')
+            const backgroundImageAsync = await getBackgroundImage('cssAsync')
             return /fixture/.test(backgroundImageSync) && /fixture/.test(backgroundImageAsync)
         })
         // wait for browser to retry background image
