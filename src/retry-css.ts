@@ -13,7 +13,7 @@ const processRules = function(
     name: UrlProperty,
     rule: CSSStyleRule,
     styleSheet: CSSStyleSheet,
-    styleRules: CSSStyleRule[],
+    styleRules: CSSRuleList,
     opts: InnerAssetsRetryOptions
 ) {
     const domainMap = opts[domainProp]
@@ -68,12 +68,13 @@ const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetry
         if (rules === null) {
             return
         }
-        const styleRules = arrayFrom(rules) as CSSStyleRule[]
-        styleRules.forEach(rule => {
+        const rulesLength = rules.length;
+        for (let i = 0; i < rulesLength; i++) {
+            const rule = rules[i] as CSSStyleRule;
             urlProperties.forEach(cssProperty => {
-                processRules(cssProperty, rule, styleSheet, styleRules, opts)
+                processRules(cssProperty, rule, styleSheet, rules, opts)
             })
-        })
+        }
 
         if (styleSheet.href) {
             handledStylesheets[styleSheet.href] = true
