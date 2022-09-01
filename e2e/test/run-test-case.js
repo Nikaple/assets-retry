@@ -99,6 +99,19 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         await expectFailedToBe([])
     })
 
+    it('should be able to keep class priority', async () => {
+        await driver.get(`${baseUri}/e2e/fixture/views/background-image-priority.html`)
+        // wait for browser to retry background image
+        await driver.wait(async () => {
+            const backgroundImage = await getBackgroundImage('styleTag');
+            return /sync/.test(backgroundImage)
+        })
+        // background-image do not show in stats
+        await expectStatToBe({})
+        await expectSucceededToBe([])
+        await expectFailedToBe([])
+    })
+
     it('should be able to retry sync styles', async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/style-sync.html`)
         await waitForCssSelector('link[href*="fixture"]')
