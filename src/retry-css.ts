@@ -1,4 +1,4 @@
-import { WMap } from './weak-map';
+import { WSet } from './weak-set';
 import { arrayFrom, stringReplace, toSlug, supportRules, getCssRules } from './util'
 import { doc, domainProp, onRetryProp, StyleElementCtor } from './constants'
 import { getCurrentDomain, DomainMap } from './url'
@@ -8,7 +8,7 @@ type UrlProperty = 'backgroundImage' | 'borderImage' | 'listStyleImage'
 // cache for <link rel="stylesheet" />
 const handledStylesheets: { [x: string]: boolean } = {}
 // cache for <style />
-const handledStyleTags = new WMap<HTMLStyleElement, boolean>();
+const handledStyleTags = new WSet<HTMLStyleElement>();
 
 const processRules = function(
     name: UrlProperty,
@@ -81,7 +81,7 @@ const processStyleSheets = (styleSheets: CSSStyleSheet[], opts: InnerAssetsRetry
             handledStylesheets[styleSheet.href] = true
         }
         if (styleSheet.ownerNode instanceof StyleElementCtor) {
-            handledStyleTags.set(styleSheet.ownerNode, true);
+            handledStyleTags.add(styleSheet.ownerNode);
         }
     })
 }
