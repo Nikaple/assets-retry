@@ -2,8 +2,10 @@ let counter = Date.now() % 1e9;
 const hasDefine = Object.defineProperty && (function() {
   try {
     // Avoid IE8's broken Object.defineProperty
-    return (Object.defineProperty({}, 'x', { value: 1 }) as any).x === 1;
-  } catch (e) {}
+    return (Object.defineProperty({}, 'x', { value: 1 })).x === 1;
+  } catch (e) {
+    // no-op
+  }
 })();
 
 /**
@@ -30,7 +32,7 @@ export class WSet<K extends object> {
   }
   delete(key: K) {
     if (!(key as any)[this._]) return false;
-    (key as any)[this._] = undefined;
+    (key as any)[this._] = void 0;
     return true;
   }
 }
