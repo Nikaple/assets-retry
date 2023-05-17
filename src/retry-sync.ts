@@ -67,7 +67,7 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (!currentCollector || !currentDomain || hasIgnoreIdentifier) {
             return
         }
-        if (target instanceof LinkElementCtor && target.getAttribute('rel') === 'preload') {
+        if (target instanceof LinkElementCtor && target.getAttribute('rel') !== 'stylesheet') {
             return
         }
         currentCollector[retryTimesProp]++
