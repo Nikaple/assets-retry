@@ -67,6 +67,9 @@ export default function initSync(opts: InnerAssetsRetryOptions) {
         if (!currentCollector || !currentDomain || hasIgnoreIdentifier) {
             return
         }
+        if (target instanceof LinkElementCtor && target.getAttribute('rel') === 'preload') {
+            return
+        }
         currentCollector[retryTimesProp]++
         currentCollector[failedProp].push(originalUrl)
         const isFinalRetry = currentCollector[retryTimesProp] > opts[maxRetryCountProp]
