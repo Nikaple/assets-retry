@@ -54,7 +54,20 @@
     <script src="/e2e/not-exist/scripts/vendor.js"></script>
     <script src="/e2e/not-exist/scripts/sync.js"></script>
     <script src="/e2e/fixture/scripts/ok.js"></script>
-    <script></script>
+    <script type="text/javascript">
+        var iframe = document.createElement('iframe');
+        iframe.src = '/e2e/fixture/views/ok.html';
+        document.body.appendChild(iframe);
+        iframe.addEventListener('load', function () {
+            // should hook createElement in iframe elements
+            var script = document.createElement('script');
+            script.src = '/e2e/fixture/scripts/async.js';
+            iframe.contentDocument.head.appendChild(script);
+            script.onload = function (event) {
+                document.body.insertAdjacentHTML('beforeend', '<div id="result">' + event.type + '</div>')
+            }
+        });
+    </script>
 </body>
 
 </html>

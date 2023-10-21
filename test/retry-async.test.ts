@@ -49,7 +49,7 @@ describe('initAsync', () => {
         const $script = document.createElement('script') as any
         const stubOnload = jest.fn()
         // no such port
-        $script.src = 'https://raw.githubusercontent.com/Nikaple/assets-retry/master/dist/assets-retry.umd.js'
+        $script.src = 'https://cdn.jsdelivr.net/npm/assets-retry'
         // only test onload, because jsdom do not trigger onerror callbacks
         $script.onload = () => {
             stubOnload()
