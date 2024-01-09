@@ -6,7 +6,7 @@
 
 ![Demo GIF](./public/assets-retry.gif)
 
-### [DEMO 地址](https://nikaple.com/test/fixture)
+### [Demo 地址](https://nikaple.com/assets-retry/vue/)
 
 ## 目录
 
