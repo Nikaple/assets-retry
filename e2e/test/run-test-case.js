@@ -204,6 +204,18 @@ module.exports = function runTestCase({ baseUri, driver, until, By }) {
         await expectFailedToBe(['/scripts/not-exist-async.js'])
     })
 
+    it('should be able to retry async scripts in iframe', async () => {
+        await driver.get(`${baseUri}/e2e/fixture/views/script-async-iframe.html`)
+        // await driver.wait(async () => {
+        //     return driver.executeScript('try { return window.frames[0].loadedScripts.async } catch (e) { return false }')
+        // })
+        await waitForCssSelector('#result')
+        const result = await driver.findElement(By.id('result')).getText()
+        const isCallbackOk = result === 'load'
+        expect(isCallbackOk).toBe(true)
+        await expectStatToBe({})
+    })
+
     it('should be able to retry background images', async () => {
         await driver.get(`${baseUri}/e2e/fixture/views/background-image-sync.html`)
         await waitForCssSelector('link')

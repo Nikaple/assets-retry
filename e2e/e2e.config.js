@@ -7,5 +7,5 @@ module.exports = {
         }
     },
     moduleFileExtensions: ['ts', 'tsx', 'js'],
-    testRegex: 'e2e\\/(.*)\\.e2e\\.(js|ts)'
+    testRegex: '(.*)\\.e2e\\.(js|ts)'
 }

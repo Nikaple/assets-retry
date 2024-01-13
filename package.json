@@ -21,8 +21,8 @@
   "scripts": {
     "lint": "eslint --fix -f codeframe 'src/**/*.ts' 'test/**/*.ts'",
     "prebuild": "rimraf dist",
-    "build": "__RETRY_IMAGE__=true rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
-    "start": "__RETRY_IMAGE__=true rollup -c rollup.config.ts -w",
+    "build": "cross-env __RETRY_IMAGE__=true rollup -c rollup.config.ts && typedoc --out docs --target es6 --theme minimal --mode file src typings",
+    "start": "cross-env __RETRY_IMAGE__=true rollup -c rollup.config.ts -w",
     "test": "jest",
     "e2e": "serve . & > /dev/null && sleep 3 && jest -c e2e/e2e.config.js; lsof -ti:5000 | xargs kill",
     "e2e:bs:test": "node e2e/browserstack.js",
