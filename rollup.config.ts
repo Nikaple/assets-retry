@@ -11,33 +11,32 @@ const pkg = require('./package.json')
 
 const libraryName = 'assets-retry'
 
-export default {
+const createConfig = (imageRetry) => ({
   input: `src/${libraryName}.ts`,
   output: [
-    { file: pkg.main, name: camelCase(libraryName), format: 'umd', sourcemap: true },
-    // { file: pkg.module, format: 'es', sourcemap: true },
+    {
+      file: imageRetry ? pkg.main : pkg.main.replace('.umd.js', '.no-image.umd.js'),
+      name: camelCase(libraryName),
+      format: 'umd',
+      sourcemap: true
+    },
   ],
-  // Indicate here external modules you don't wanna include in your bundle (i.e.: 'lodash')
   external: [],
   watch: {
     include: 'src/**',
   },
   plugins: [
-    // Allow json resolution
     json(),
-    // Compile TypeScript files
     typescript(),
-    // replace environment variables
-    replace({ __RETRY_IMAGE__: process.env.__RETRY_IMAGE__ }),
-    // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
+    replace({ __RETRY_IMAGE__: imageRetry }),
     commonjs(),
-    // Allow node_modules resolution, so you can use 'external' to control
-    // which external modules to include in the bundle
-    // https://github.com/rollup/rollup-plugin-node-resolve#usage
     resolve(),
-    // uglify js
     uglify(),
-    // // Resolve source maps to the original source
     sourceMaps(),
   ],
-}
+})
+
+export default [
+  createConfig(true),
+  createConfig(false)
+]
