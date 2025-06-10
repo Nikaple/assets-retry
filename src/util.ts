@@ -284,3 +284,12 @@ export const getTargetUrl = function(target: EventTarget | null) {
     }
     return ''
 }
+
+export const isElementInCurrentContext = function (element: any) {
+    let parent: any = element
+    while (parent) {
+        parent = parent.parentNode
+        if (parent === doc) return true
+    }
+    return false;
+}

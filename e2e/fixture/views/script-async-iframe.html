@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <script type="text/javascript" src="/dist/assets-retry.umd.js"></script>
+    <script type="text/javascript">
+        var succeeded = []
+        var failed = []
+        var stat = window.assetsRetry({
+            domain: ['/e2e/not-exist', '/e2e/fixture'],
+            maxRetryCount: 1,
+            onSuccess: function (url) {
+                succeeded.push(url)
+            },
+            onFail: function (url) {
+                failed.push(url)
+            }
+        })
+    </script>
+</head>
+
+<body>
+    <script type="text/javascript">
+        var iframe = document.createElement('iframe');
+        iframe.src = '/e2e/fixture/views/ok.html';
+        document.body.appendChild(iframe);
+        iframe.addEventListener('load', function () {
+            // should hook createElement in iframe elements
+            var script = document.createElement('script');
+            script.src = '/e2e/fixture/scripts/async.js';
+            if (iframe.contentDocument) {
+                iframe.contentDocument.head.appendChild(script);
+                script.onload = function(event) {
+                    document.body.insertAdjacentHTML('beforeend', '<div id="result">' + event.type + '</div>')
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

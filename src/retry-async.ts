@@ -8,7 +8,8 @@ import {
     noop,
     getTargetUrl,
     loadNextLink,
-    unique
+    unique,
+    isElementInCurrentContext
 } from './util'
 
 import {
@@ -25,7 +26,8 @@ import {
     ignoreIdentifier,
     doc,
     ScriptElementCtor,
-    LinkElementCtor
+    LinkElementCtor,
+    win
 } from './constants'
 import { retryCollector } from './collector'
 import { prepareDomainMap, extractInfoFromUrl } from './url'
@@ -98,6 +100,9 @@ const getHookedElementDescriptors = function(self: HookedElement, opts: InnerAss
                             )
                             const shouldIgnore = realElement.hasAttribute(ignoreIdentifier)
                             if (!currentDomain || !currentCollector || shouldIgnore) {
+                                return callOriginalOnError()
+                            }
+                            if (!isElementInCurrentContext(event.target as Element)) {
                                 return callOriginalOnError()
                             }
                             const newSrc = stringReplace(
@@ -173,6 +178,16 @@ const hookCreateElement = function(opts: InnerAssetsRetryOptions) {
         if (name === scriptTag || name === linkTag) {
             return createHookedElement((originalCreateElement as any).call(doc, name), opts)
         }
+        if (name === 'iframe') {
+            const iframeElement = (originalCreateElement as any).call(doc, name) as HTMLIFrameElement
+            iframeElement.addEventListener('load', () => {
+                const window = iframeElement.contentWindow as any
+                if (window) {
+                    hookPrototypes(window)
+                }
+            });
+            return iframeElement
+        }
         return originalCreateElement.call(doc, name, options)
     }
 }
@@ -197,6 +212,25 @@ const hookPrototype = function(target: any) {
         }
     })
 }
+
+function hookPrototypes(window?: Window | null) {
+    try {
+        const realWindow: any = window || win
+        // eslint-disable-next-line
+        if (typeof realWindow.Node !== 'undefined') {
+            hookPrototype(realWindow.Node.prototype)
+        }
+        // eslint-disable-next-line
+        if (typeof realWindow.Element !== 'undefined') {
+            hookPrototype(realWindow.Element.prototype)
+        }
+    } catch (e) {
+        // ignore cross origin errors
+        if (window === win) {
+            throw e;
+        }
+    }
+}
 /**
  * init asynchronous retrying of script tags
  * @param {InnerAssetsRetryOptions} opts
@@ -204,13 +238,7 @@ const hookPrototype = function(target: any) {
  */
 export default function initAsync(opts: InnerAssetsRetryOptions) {
     hookCreateElement(opts)
-    // eslint-disable-next-line
-    if (typeof Node !== 'undefined') {
-        hookPrototype(Node.prototype)
-    }
-    // eslint-disable-next-line
-    if (typeof Element !== 'undefined') {
-        hookPrototype(Element.prototype)
-    }
+    hookPrototypes()
+    
     return retryCollector
 }
